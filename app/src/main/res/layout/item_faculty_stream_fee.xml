@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/llFeesStructure"
+            android:visibility="visible"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:id="@+id/yr_tv"
+                    android:layout_width="120dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/border"
+                    android:gravity="center"
+                    android:minHeight="35dp"
+                    android:text=""
+                    android:textColor="@color/grey_light2"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/yr_fees_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="-2dp"
+                    android:background="@drawable/border"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:minHeight="35dp"
+                    android:text=""
+                    android:textColor="@color/grey_light2"
+                    android:textSize="12sp" />
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="1dp" />
+    </LinearLayout>
+</layout>
+
+
+
