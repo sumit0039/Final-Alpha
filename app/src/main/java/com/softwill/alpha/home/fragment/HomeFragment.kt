@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.softwill.alpha.R
@@ -84,6 +85,7 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
 
         //9589YourPreference.saveData(Constant.IsStudentLogin, false)
 
+        apiUserPushNotificationToken()
         apiCurrentUserDetails()
 
         setupSwipeListener()
@@ -114,6 +116,65 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
 
         apiHomePosts()
 
+    }
+
+    private fun apiUserPushNotificationToken() {
+        // Retrieve the FCM token
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // The token has been successfully retrieved
+                    val token = task.result
+
+                    val jsonObject = JsonObject().apply {
+                        addProperty("token", token)
+                    }
+                    val call: Call<ResponseBody> =
+                        RetrofitClient.getInstance(requireActivity()).myApi.api_NotificationToken(
+                           jsonObject
+                        )
+
+                    call.enqueue(object : Callback<ResponseBody> {
+                        @SuppressLint("NotifyDataSetChanged")
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                            if (response.isSuccessful) {
+                                val responseJson = response.body()?.string()
+                                val responseObject = JSONObject(responseJson.toString())
+
+                                if (responseObject.has("message")) {
+                                    var message = responseObject.getString("message");
+
+                                    if (message == "Updated successfully") {
+
+
+
+                                    }
+
+
+                                } else if (responseObject.has("error")) {
+                                    UtilsFunctions().showToast(
+                                        requireActivity(), responseObject.getString("error")
+                                    )
+                                }
+
+
+                            } else {
+                                UtilsFunctions().handleErrorResponse(response, requireActivity());
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            t.printStackTrace()
+                        }
+                    })
+                    println("UserFirebasePushNotificationToken : $token")
+                    // Use the token as needed
+                    // For example, send it to your server to associate the device with the user
+                } else {
+                    // Failed to retrieve the token
+                    // Handle the error
+                }
+            }
     }
 
 

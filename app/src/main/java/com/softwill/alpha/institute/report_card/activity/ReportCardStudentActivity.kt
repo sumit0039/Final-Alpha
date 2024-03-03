@@ -11,8 +11,11 @@ import androidx.databinding.DataBindingUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.softwill.alpha.R
+import com.softwill.alpha.common.adapter.LectureClassAdapter
+import com.softwill.alpha.common.model.LectureClassModel
 import com.softwill.alpha.databinding.ActivityReportCardStudentBinding
 import com.softwill.alpha.institute.report_card.adapter.ReportCardStudentAdapter
+import com.softwill.alpha.institute.report_card.adapter.StudentClassAdapter
 import com.softwill.alpha.institute.report_card.model.ReportCard
 import com.softwill.alpha.networking.RetrofitClient
 import com.softwill.alpha.utils.UtilsFunctions
@@ -21,11 +24,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ReportCardStudentActivity : AppCompatActivity() {
+class ReportCardStudentActivity : AppCompatActivity(), StudentClassAdapter.LectureClassCallbackInterface {
 
     private lateinit var binding: ActivityReportCardStudentBinding
     private var mReportCardStudentAdapter: ReportCardStudentAdapter? = null
-
+    private var mLectureClassAdapter: StudentClassAdapter? = null
+    val mLectureClassModel = ArrayList<LectureClassModel>()
+    var mClassId: Int = -1
+    var mClassName: String = ""
     private val mReportCard = ArrayList<ReportCard>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,10 +44,13 @@ class ReportCardStudentActivity : AppCompatActivity() {
 
         setupBack()
 
+        setupClassAdapter()
+
         setupReportCardStudentAdapter()
 
+        apiClassList()
 
-        apiReportCardList()
+//        apiReportCardList(mClassId)
     }
 
     private fun setupReportCardStudentAdapter() {
@@ -51,10 +60,52 @@ class ReportCardStudentActivity : AppCompatActivity() {
 
     }
 
+    private fun setupClassAdapter() {
+        mLectureClassAdapter = StudentClassAdapter(applicationContext, mLectureClassModel, this)
+        binding.rvReportClass.adapter = mLectureClassAdapter
+        mLectureClassAdapter?.notifyDataSetChanged()
 
-    private fun apiReportCardList() {
+    }
+
+    private fun apiClassList() {
         val call: Call<ResponseBody> =
-            RetrofitClient.getInstance(this@ReportCardStudentActivity).myApi.api_ReportCardList(212);
+            RetrofitClient.getInstance(this@ReportCardStudentActivity).myApi.api_ReportClassList()
+
+        call.enqueue(object : Callback<ResponseBody> {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()?.string()
+                    if (!responseBody.isNullOrEmpty()) {
+                        val listType = object : TypeToken<List<LectureClassModel>>() {}.type
+                        val mList: List<LectureClassModel> = Gson().fromJson(responseBody, listType)
+
+                        // Update the mTransportTeamMember list with the new data
+                        mLectureClassModel.clear()
+                        mLectureClassModel.addAll(mList)
+
+
+                        if (mLectureClassModel.isNotEmpty()) {
+                            mClassId = mLectureClassModel[0].classId
+                            mClassName = mLectureClassModel[0].className
+                            apiReportCardList(mClassId)
+                            mLectureClassAdapter?.notifyDataSetChanged()
+                        }
+                    }
+                } else {
+                    UtilsFunctions().handleErrorResponse(response, this@ReportCardStudentActivity)
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    private fun apiReportCardList(mClassId: Int) {
+        val call: Call<ResponseBody> =
+            RetrofitClient.getInstance(this@ReportCardStudentActivity).myApi.api_ReportCardList(mClassId);
 
         call.enqueue(object : Callback<ResponseBody> {
             @SuppressLint("NotifyDataSetChanged")
@@ -115,5 +166,15 @@ class ReportCardStudentActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun reportCardStudentClassClickCallback(
+        classId: Int,
+        position: Int,
+        className: String
+    ) {
+        mClassId = classId
+        mClassName = className
+        apiReportCardList(mClassId)
     }
 }

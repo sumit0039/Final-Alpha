@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -44,8 +45,7 @@ class ReadBookActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding =
-            DataBindingUtil.setContentView(this, R.layout.activity_read_book)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_read_book)
 
         val bundle: Bundle? = intent.extras
         mScreenTitle = bundle?.getString("mScreenTitle")
@@ -64,60 +64,61 @@ class ReadBookActivity : AppCompatActivity() {
 
         binding.btnRead.setOnClickListener {
 
-            val jsonObject = JsonObject().apply {
-                addProperty("bookId", mBookId)
-            }
-
-            val call: Call<ResponseBody> = RetrofitClient.getInstance(this@ReadBookActivity).myApi.api_ReadBookByID(jsonObject)
+            val call: Call<ResponseBody> = RetrofitClient.getInstance(this@ReadBookActivity).myApi.api_ReadBookByID(
+                mBookId.toString()
+            )
 
 
             call.enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
-                        progressDialog!!.dismiss()
+//                        progressDialog!!.dismiss()
                         val responseJson = response.body()?.string()
                         if (!responseJson.isNullOrEmpty()) {
+                            FirebaseUtil.openPdfFromBase64(this@ReadBookActivity, responseJson.toString(), mName!!)
+
+//                            Toast.makeText(this@ReadBookActivity,responseJson.toString(),Toast.LENGTH_LONG).show()
                         }
 
                     } else {
-                       UtilsFunctions().handleErrorResponse(response, this@ReadBookActivity);
-                        progressDialog!!.dismiss()
+                        UtilsFunctions().handleErrorResponse(response, this@ReadBookActivity);
+//                        progressDialog!!.dismiss()
 
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     t.printStackTrace()
-                    progressDialog!!.dismiss()
+//                    progressDialog!!.dismiss()
 
                 }
             })
 
+            /*
+                        if(mPdfUrl!=null) {
+            //                val base64String = urlToBase64(mPdfUrl!!)
 
-            if(mPdfUrl!=null) {
-//                val base64String = urlToBase64(mPdfUrl!!)
+            //                FirebaseUtil.openPdfFromBase64(this@ReadBookActivity, base64String!!, mName!!)
+                            try {
+                                val intent = Intent(this@ReadBookActivity, PDFViewerActivity::class.java)
+                                intent.putExtra("pdf_uri_file_path", mPdfUrl)
+                                intent.putExtra("pdf_uri_file_name", mName)
+                                startActivity(intent)
+                           if (mBookId != -1){
+                               apiMarkRecentRead()
+                           }
 
-//                FirebaseUtil.openPdfFromBase64(this@ReadBookActivity, base64String!!, mName!!)
-                try {
-                    val intent = Intent(this@ReadBookActivity, PDFViewerActivity::class.java)
-                    intent.putExtra("pdf_uri_file_path", mPdfUrl)
-                    intent.putExtra("pdf_uri_file_name", mName)
-                    startActivity(intent)
-               if (mBookId != -1){
-                   apiMarkRecentRead()
-               }
+            //               startActivity(intent)
 
-//               startActivity(intent)
-
-           } catch (e: ActivityNotFoundException) {
-               // PDF viewer app not found on the device
-               Toast.makeText(this, "No PDF viewer app installed", Toast.LENGTH_SHORT).show()
-           }
+                       } catch (e: ActivityNotFoundException) {
+                           // PDF viewer app not found on the device
+                           Toast.makeText(this, "No PDF viewer app installed", Toast.LENGTH_SHORT).show()
+                       }*/
 //                Toast.makeText(this, mPdfUrl, Toast.LENGTH_LONG).show()
-            }else{
-                Toast.makeText(this, "No data", Toast.LENGTH_LONG).show()
+            /* }else{
+                 Toast.makeText(this, "No data", Toast.LENGTH_LONG).show()
 
-            }
+             }*/
 
 
         }

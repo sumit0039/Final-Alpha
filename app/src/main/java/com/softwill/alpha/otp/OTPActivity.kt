@@ -55,7 +55,7 @@ class OTPActivity : AppCompatActivity() {
     }
 
     private fun setTimer() {
-         timer = object: CountDownTimer(30000, 1000) {
+         timer = object: CountDownTimer(120000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 var diff = millisUntilFinished
                 val secondsInMilli: Long = 1000

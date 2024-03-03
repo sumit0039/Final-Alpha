@@ -16,11 +16,13 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.softwill.alpha.R
 import com.softwill.alpha.databinding.ActivitySettingBinding
 import com.softwill.alpha.networking.RetrofitClient
 import com.softwill.alpha.otp.OTPActivity
+import com.softwill.alpha.profile.tabActivity.PostModel
 import com.softwill.alpha.signIn.SignInActivity
 import com.softwill.alpha.utils.Constant
 import com.softwill.alpha.utils.UtilsFunctions
@@ -72,6 +74,24 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         binding.tvChangeClass.setOnClickListener(this)
         binding.tvChangeMobile.setOnClickListener(this)
         binding.rlExit.setOnClickListener(this)
+
+        // Set up a click listener for the SwitchCompat
+        binding.deleteCurrentUser.setOnCheckedChangeListener { _, isChecked ->
+            // Handle the click event here
+            if (isChecked) {
+                // The switch is checked (ON)
+                // Perform actions when the switch is turned on
+                // For example, enable some feature or start a service
+                apiDeleteCurrentUser()
+                binding.deleteCurrentUser.isClickable=true
+            } else {
+                // The switch is unchecked (OFF)
+                // Perform actions when the switch is turned off
+                // For example, disable some feature or stop a service
+                binding.deleteCurrentUser.isClickable=false
+            }
+        }
+
     }
 
     private fun setupBack() {
@@ -609,6 +629,52 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
 
             override fun onNothingSelected(adapterView: AdapterView<*>?) {}
         }
+    }
+
+
+    private fun apiDeleteCurrentUser() {
+        val call: Call<ResponseBody> = RetrofitClient.getInstance(this@SettingActivity).myApi.api_DeleteCurrentUser()
+
+        call.enqueue(object : Callback<ResponseBody> {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val responseJson = response.body()?.string()
+                    val responseObject = JSONObject(responseJson)
+                    if (responseObject.has("message")) {
+                        // Updated successfully
+
+                        YourPreference.clearPreference(this@SettingActivity)
+                        YourPreference.saveData(Constant.AuthToken, "")
+                        YourPreference.saveData(Constant.IsLogin, false)
+
+
+
+                        UtilsFunctions().showToast(
+                            this@SettingActivity,
+                            responseObject.getString("message")
+                        )
+
+                        val intent = Intent(applicationContext, SignInActivity::class.java)
+                        startActivity(intent)
+                        finishAffinity()
+
+
+                    } else if (responseObject.has("error")) {
+                        // Error occurred
+                        UtilsFunctions().showToast(
+                            this@SettingActivity, responseObject.getString("error")
+                        )
+                    }
+                } else {
+                    UtilsFunctions().handleErrorResponse(response, this@SettingActivity)
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
     }
 
 }

@@ -36,7 +36,6 @@ class ReportCardStudentAdapter(
                 Glide.with(context).load(reportCardUrl).placeholder(R.drawable.no_best_college).into(binding.ivImage)
             }
         }
-
     }
 
     override fun getItemCount(): Int {

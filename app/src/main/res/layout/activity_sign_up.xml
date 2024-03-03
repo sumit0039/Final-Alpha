@@ -307,15 +307,28 @@
                     app:layout_constraintStart_toStartOf="@+id/textView10"
                     app:layout_constraintTop_toBottomOf="@+id/textView10"  />
 
+                <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                    android:id="@+id/etInstituteListUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    app:hintText="Search Institute"
+                    android:textAlignment="textStart"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_rounded_1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/textView10"
+                    app:layout_constraintTop_toBottomOf="@+id/textView10"/>
+
                 <AutoCompleteTextView
-                    android:id="@+id/etInstituteUsernae"
+                    android:id="@+id/etInstituteUserne"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/bg_rounded_1"
                     android:inputType="textPersonName"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:textColor="@color/black"
                     android:textColorHint="@color/gray_light"
                     android:textSize="18sp"
@@ -333,8 +346,8 @@
                     android:visibility="invisible"
                     android:textColor="@color/red"
                     android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="@+id/etInstituteUsernae"
-                    app:layout_constraintTop_toBottomOf="@+id/etInstituteUsernae" />
+                    app:layout_constraintEnd_toEndOf="@+id/etInstituteListUsername"
+                    app:layout_constraintTop_toBottomOf="@+id/etInstituteListUsername" />
 
 
                 <TextView
@@ -463,7 +476,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="50dp"
                             android:background="@color/transparent"
-                             />
+                            />
 
 
                     </RelativeLayout>

@@ -33,11 +33,14 @@ public interface APIInterface {
     @POST("api/otp/verifyOTP")
     Call<ResponseBody> api_VerifyOTP(@Body JsonObject jsonObject);
 
-    @POST("api/check_institue")
-    Call<ResponseBody> api_CheckInstitute(@Body JsonObject jsonObject);
+    @GET("api/institutes")
+    Call<ResponseBody> api_CheckInstitute();
 
-    @POST("api/user/check_username")
-    Call<ResponseBody> api_CheckUserName(@Body JsonObject jsonObject);
+    @POST("api/user/store_notification_token")
+    Call<ResponseBody> api_NotificationToken(@Body JsonObject jsonObject);
+
+    @POST("api/user/check_username/{username}")
+    Call<ResponseBody> api_CheckUserName(@Path("username") String username);
 
     @POST("api/student/register")
     Call<ResponseBody> api_StudentRegister(@Body JsonObject jsonObject);
@@ -112,6 +115,9 @@ public interface APIInterface {
 
     @DELETE("api/post/{id}")
     Call<ResponseBody> api_PostDelete(@Path("id") int id);
+
+    @DELETE("}/api/current_user/delete_account")
+    Call<ResponseBody> api_DeleteCurrentUser();
 
 
     //--------------------------------------------USER CONNECTIONS------------------------------------------//
@@ -400,8 +406,8 @@ public interface APIInterface {
     @POST("api/book/mark_recent_read/{id}")
     Call<ResponseBody> api_MarkRecentRead(@Path("id") int id);
 
-    @POST("api/book/pdf_to_base64")
-    Call<ResponseBody> api_ReadBookByID(@Body JsonObject jsonObject);
+    @GET("api/book/pdf_to_base64/{bookId}")
+    Call<ResponseBody> api_ReadBookByID(@Path("bookId") String bookId);
 
     //------------------------------------------------Dairy---------------------------------------------//
 
@@ -512,14 +518,17 @@ public interface APIInterface {
 
     //---------------------------------------------ReportCard-------------------------------------------//
 
+    @GET("api/student/class_list")
+    Call<ResponseBody> api_ReportClassList();
+
     @GET("api/student/report_card/list")
     Call<ResponseBody> api_ReportCardList(@Query("classId") int classId);
 
     @Multipart
     @POST("api/teacher/report_card/add")
     Call<ResponseBody> api_AddReportCard(@Part List<MultipartBody.Part> reporCardFile,
-                                      @Part("studentId") RequestBody studentId,
-                                      @Part("classId") RequestBody classId);
+                                         @Part("studentId") RequestBody studentId,
+                                         @Part("classId") RequestBody classId);
 
     //------------------------------------------------Class---------------------------------------------//
 
@@ -553,7 +562,7 @@ public interface APIInterface {
 
     @GET("api/teacher/timetable/list")
     Call<ResponseBody> api_TeacherTimeTableList(@Query("date") String date,
-                                                    @Query("classId") int classId);
+                                                @Query("classId") int classId);
 
     //---------------------------------------------Attendance-------------------------------------------// 4
 
@@ -561,10 +570,10 @@ public interface APIInterface {
     Call<ResponseBody> api_Attendance();
 
 
-  @GET("api/teacher/attendance/get_student_attendance")
+    @GET("api/teacher/attendance/get_student_attendance")
     Call<ResponseBody> api_GetStudentAttendance(@Query("classId") int classId,
-                                          @Query("subjectId") int subjectId,
-                                          @Query("date") String date);
+                                                @Query("subjectId") int subjectId,
+                                                @Query("date") String date);
 
     @GET("api/teacher/class_student_list")
     Call<ResponseBody> api_AttandanceList(@Query("classId") int classId,

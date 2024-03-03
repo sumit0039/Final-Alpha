@@ -46,46 +46,17 @@ class PDFViewerActivity : AppCompatActivity() {
                         // PDF file has been loaded
                     }
                     .load()
-                Toast.makeText(this, file, Toast.LENGTH_LONG).show()
+//                Toast.makeText(this, file, Toast.LENGTH_LONG).show()
 
             }
             else {
-                val file = intent.getStringExtra("pdf_uri_file_path")
-                mPdfFileName = intent.getStringExtra("pdf_uri_file_name").toString()
-                // URI of the PDF file
-//                val pdfUri = file
-                val pdfUri = "https://example.com/path/to/your/pdf.pdf"
-                Toast.makeText(this, file, Toast.LENGTH_LONG).show()
-                GlobalScope.launch(Dispatchers.IO) {
-                    // Perform network operation in background
-                    val pdfByteArray = downloadPdfFromUrl("https://example.com/path/to/pdf.pdf")
-
-                    withContext(Dispatchers.Main) {
-                        // Load PDF into PDFView on the main/UI thread
-                        val pdfView = findViewById<PDFView>(R.id.pdfView)
-                        pdfView.fromBytes(pdfByteArray).load()
-                    }
-                }
-//                val pdfByteArray = downloadPdfFromUrl("https://example.com/path/to/pdf.pdf")
-
-                // Load PDF from URI
-               /* binding.pdfView.fromBytes(pdfByteArray)
-                    .onLoad {
-                        // PDF file has been loaded
-                    }
-                    .load()*/
-                /*
-                // Load PDF from URI
-                binding.pdfView.fromUri(Uri.parse(pdfUri))
-                    .onLoad {
-                        // PDF file has been loaded
-                    }
-                    .load()
-*/
                 // Handle null file path
+                Toast.makeText(this, "File not found!!", Toast.LENGTH_LONG).show()
+
             }
 
             setupBack()
+
         }
     }
 
