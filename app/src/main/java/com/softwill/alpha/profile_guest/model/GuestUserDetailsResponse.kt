@@ -18,6 +18,7 @@ data class GuestUserDetailsResponse(
     val achievements: List<String>?,
     val email: String?,
     val instituteName: String?,
+    val privacy_setting: PrivacySetting?,
     val connections: Int,
     val friends: Boolean,
     val posts: List<PostModel>?

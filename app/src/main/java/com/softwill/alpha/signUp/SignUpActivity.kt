@@ -497,7 +497,7 @@ class SignUpActivity : AppCompatActivity() {
                 binding.etInstituteListUsername.setTitle(product)
                 Toast.makeText(this@SignUpActivity,mGetInstituteList[namePosition].name, Toast.LENGTH_LONG).show()
 
-                api_checkInstituteName(mGetInstituteList[namePosition].name)
+                api_checkInstituteName(mGetInstituteList[namePosition].userName)
 
                 if(facultyPos != -1 && streamPos != -1){
                     mClassId = instituteModel?.faculties?.get(facultyPos)?.streams?.get(streamPos)?.streamClasses?.get(pos)?.classId!!;

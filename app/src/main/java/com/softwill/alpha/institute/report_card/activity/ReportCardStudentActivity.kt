@@ -17,6 +17,8 @@ import com.softwill.alpha.databinding.ActivityReportCardStudentBinding
 import com.softwill.alpha.institute.report_card.adapter.ReportCardStudentAdapter
 import com.softwill.alpha.institute.report_card.adapter.StudentClassAdapter
 import com.softwill.alpha.institute.report_card.model.ReportCard
+import com.softwill.alpha.institute.report_card.model.StudentClass
+import com.softwill.alpha.institute.report_card.model.StudentClassItem
 import com.softwill.alpha.networking.RetrofitClient
 import com.softwill.alpha.utils.UtilsFunctions
 import okhttp3.ResponseBody
@@ -29,7 +31,7 @@ class ReportCardStudentActivity : AppCompatActivity(), StudentClassAdapter.Lectu
     private lateinit var binding: ActivityReportCardStudentBinding
     private var mReportCardStudentAdapter: ReportCardStudentAdapter? = null
     private var mLectureClassAdapter: StudentClassAdapter? = null
-    val mLectureClassModel = ArrayList<LectureClassModel>()
+    val mLectureClassModel = ArrayList<StudentClassItem>()
     var mClassId: Int = -1
     var mClassName: String = ""
     private val mReportCard = ArrayList<ReportCard>()
@@ -77,8 +79,8 @@ class ReportCardStudentActivity : AppCompatActivity(), StudentClassAdapter.Lectu
                 if (response.isSuccessful) {
                     val responseBody = response.body()?.string()
                     if (!responseBody.isNullOrEmpty()) {
-                        val listType = object : TypeToken<List<LectureClassModel>>() {}.type
-                        val mList: List<LectureClassModel> = Gson().fromJson(responseBody, listType)
+                        val listType = object : TypeToken<List<StudentClassItem>>() {}.type
+                        val mList: List<StudentClassItem> = Gson().fromJson(responseBody, listType)
 
                         // Update the mTransportTeamMember list with the new data
                         mLectureClassModel.clear()
@@ -86,9 +88,9 @@ class ReportCardStudentActivity : AppCompatActivity(), StudentClassAdapter.Lectu
 
 
                         if (mLectureClassModel.isNotEmpty()) {
-                            mClassId = mLectureClassModel[0].classId
+                            mClassId = mLectureClassModel[0].instituteClassId
                             mClassName = mLectureClassModel[0].className
-                            apiReportCardList(mClassId)
+                            apiReportCardList(mLectureClassModel[0].instituteClassId)
                             mLectureClassAdapter?.notifyDataSetChanged()
                         }
                     }

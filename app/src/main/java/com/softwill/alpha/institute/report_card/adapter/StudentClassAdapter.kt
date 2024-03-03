@@ -9,11 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.softwill.alpha.R
 import com.softwill.alpha.common.model.LectureClassModel
 import com.softwill.alpha.databinding.ItemClassesBinding
+import com.softwill.alpha.institute.report_card.model.StudentClassItem
 
 
 class StudentClassAdapter(
     private val context: Context,
-    private var mList: ArrayList<LectureClassModel>,
+    private var mList: ArrayList<StudentClassItem>,
     private val callbackInterface: LectureClassCallbackInterface,
     var clickPosition: Int = 0,
 
@@ -54,7 +55,7 @@ class StudentClassAdapter(
                 }
 
                 binding.root.setOnClickListener {
-                    callbackInterface.reportCardStudentClassClickCallback(classId, position, className)
+                    callbackInterface.reportCardStudentClassClickCallback(mList[position].instituteClassId, position, className)
                     if (clickPosition != holder.adapterPosition) {
                         clickPosition = holder.adapterPosition
                     }

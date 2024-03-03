@@ -28,6 +28,7 @@ class Constant {
         var instituteStreamId = "instituteStreamId"
         var instituteStreamClassId = "instituteStreamClassId"
         var instituteName = "instituteName"
+        var privacy_setting = "privacy_setting"
         var instituteUsername = "instituteUsername"
         var facultyName = "facultyName"
         var className = "className"
