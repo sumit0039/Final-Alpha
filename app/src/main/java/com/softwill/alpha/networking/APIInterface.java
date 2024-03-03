@@ -34,7 +34,10 @@ public interface APIInterface {
     Call<ResponseBody> api_VerifyOTP(@Body JsonObject jsonObject);
 
     @GET("api/institutes")
-    Call<ResponseBody> api_CheckInstitute();
+    Call<ResponseBody> api_GetInstituteList();
+
+    @POST("api/check_institue")
+    Call<ResponseBody> api_CheckInstitute(@Body JsonObject jsonObject);
 
     @POST("api/user/store_notification_token")
     Call<ResponseBody> api_NotificationToken(@Body JsonObject jsonObject);

@@ -311,7 +311,7 @@
                     android:id="@+id/etInstituteListUsername"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    app:hintText="Search Institute"
+                    app:hintText="Search by Institute"
                     android:textAlignment="textStart"
                     android:layout_marginHorizontal="15dp"
                     android:layout_marginTop="10dp"

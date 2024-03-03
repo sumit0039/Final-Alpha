@@ -14,19 +14,16 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.softwill.alpha.R
-import com.softwill.alpha.career.best_college.model.BestCollegeModel
 import com.softwill.alpha.databinding.ActivitySignUpBinding
 import com.softwill.alpha.networking.RetrofitClient
 import com.softwill.alpha.signIn.SignInActivity
 import com.softwill.alpha.signUp.model.FacultyModel
-import com.softwill.alpha.signUp.model.GetInstitueListResponse
 import com.softwill.alpha.signUp.model.GetInstitueListResponseItem
 import com.softwill.alpha.signUp.model.InstituteModel
 import com.softwill.alpha.signUp.model.StreamClassModel
@@ -237,8 +234,8 @@ class SignUpActivity : AppCompatActivity() {
 
 //        binding.etInstituteUsername.addTextChangedListener(textWatcher)
 
-        binding.etInstituteListUsername.setTitle("Select Institute")
-        binding.etInstituteListUsername.setPositiveButton("OK")
+       /* binding.etInstituteListUsername.setTitle("Select Institute")
+        binding.etInstituteListUsername.setPositiveButton("OK")*/
 
         binding.etUsername.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -348,7 +345,7 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun apiCheckInstitute() {
 
-        val call: Call<ResponseBody> = RetrofitClient.getInstance(this@SignUpActivity).myApi.api_CheckInstitute()
+        val call: Call<ResponseBody> = RetrofitClient.getInstance(this@SignUpActivity).myApi.api_GetInstituteList()
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
@@ -359,7 +356,12 @@ class SignUpActivity : AppCompatActivity() {
                         val mList: List<GetInstitueListResponseItem> = Gson().fromJson(responseJson, listType)
                         mGetInstituteList.clear()
                         mGetInstituteList.addAll(mList)
-                        setSpinnerInstitute(-1, -1)
+                        val retailerListName = ArrayList<String>()
+
+                        for (commonSpinner in mGetInstituteList) {
+                            retailerListName.add(commonSpinner.name)
+                        }
+                        setSpinnerInstitute(-1, -1,retailerListName)
                         resetSpinners()
                     }
 
@@ -469,11 +471,16 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    private fun setSpinnerInstitute(facultyPos: Int, streamPos: Int) {
-        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mGetInstituteList)
+    private fun setSpinnerInstitute(
+        facultyPos: Int,
+        streamPos: Int,
+        retailerListName: ArrayList<String>
+    ) {
+        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, retailerListName)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         binding.etInstituteListUsername.adapter = adapter
-        binding.etInstituteListUsername.setSelection(0)
+//        binding.etInstituteListUsername.setSelection(0)
+
         binding.etInstituteListUsername.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -482,14 +489,20 @@ class SignUpActivity : AppCompatActivity() {
                 pos: Int,
                 l: Long
             ) {
-                val value = adapterView.getItemAtPosition(pos).toString()
-                binding.etInstituteListUsername.setTitle(binding.spinnerClass.selectedItem.toString())
-                mInstituteId = adapterView.getItemAtPosition(pos) as Int
+
+                val product = adapterView.selectedItem.toString()
+                val namePosition = adapter.getPosition(product)
+                mInstituteId = mGetInstituteList[namePosition].instituteId
+//                binding.etInstituteListUsername.setSelection(namePosition)
+                binding.etInstituteListUsername.setTitle(product)
+                Toast.makeText(this@SignUpActivity,mGetInstituteList[namePosition].name, Toast.LENGTH_LONG).show()
+
+                api_checkInstituteName(mGetInstituteList[namePosition].name)
 
                 if(facultyPos != -1 && streamPos != -1){
                     mClassId = instituteModel?.faculties?.get(facultyPos)?.streams?.get(streamPos)?.streamClasses?.get(pos)?.classId!!;
 
-                    System.out.println("mClassId : $mClassId")
+                    println("mClassId : $mClassId")
                 }
 
             }
@@ -498,7 +511,59 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-  private fun setSpinnerClass(facultyPos: Int, streamPos: Int) {
+    private fun api_checkInstituteName(name: String) {
+        val jsonObject = JsonObject().apply {
+            addProperty("instituteUsername", name)
+        }
+
+        val call: Call<ResponseBody> =
+            RetrofitClient.getInstance(this@SignUpActivity).myApi.api_CheckInstitute(jsonObject)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val responseJson = response.body()?.string()
+                    if (!responseJson.isNullOrEmpty()) {
+                        binding.tvValidUserName.text = "Valid"
+                        binding.tvValidUserName.visibility = View.VISIBLE
+                        binding.tvValidUserName.setTextColor(ContextCompat.getColor(this@SignUpActivity, com.softwill.alpha.R.color.green));
+
+                        instituteModel = parseInstituteFromJson(responseJson)
+
+                        mFacilitiesList.clear()
+
+                        for (faculty in instituteModel?.faculties!!) {
+                            mFacilitiesList.add(faculty.name)
+                        }
+
+//                        val textView = findViewById<View>(com.softwill.alpha.R.id.etInstituteUsername) as AutoCompleteTextView
+
+
+                        mInstituteId = instituteModel!!.instituteId
+
+                        if (mFacilitiesList.isNotEmpty()) {
+                            setSpinnerFaculties()
+                        }
+
+                    }
+                    /*else{
+                        resetSpinners()
+                    }*/
+                } else {
+                    binding.tvValidUserName.visibility = View.VISIBLE
+                    binding.tvValidUserName.text = "Invalid"
+                    binding.tvValidUserName.setTextColor(ContextCompat.getColor(this@SignUpActivity, R.color.red))
+                    UtilsFunctions().handleErrorResponse(response, this@SignUpActivity);
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    private fun setSpinnerClass(facultyPos: Int, streamPos: Int) {
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mClassList)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         binding.spinnerClass.adapter = adapter
