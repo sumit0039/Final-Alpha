@@ -63,11 +63,11 @@
                 <TextView
                     android:id="@+id/tvTeacher"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="44dp"
+                    android:layout_gravity="center"
                     android:gravity="center"
                     android:paddingVertical="8dp"
                     android:text="@string/teacher"
-                    android:layout_gravity="center"
                     android:textAlignment="center"
                     android:textColor="@color/gray_color"
                     android:textSize="16sp"
@@ -255,8 +255,98 @@
                     app:layout_constraintTop_toBottomOf="@+id/etUsername" />
 
 
+                <LinearLayout
+                    android:id="@+id/textView10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="@+id/textView7"
+                    app:layout_constraintTop_toBottomOf="@+id/etUsername">
 
-                <TextView
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/institute_username"
+                        android:textColor="@color/gray_color"
+                        android:textSize="18sp" />
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/ic_star" />
+
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/info"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:padding="10dp"
+                    android:src="@drawable/icon_info"
+                    app:layout_constraintEnd_toEndOf="@+id/textView10"
+                    app:layout_constraintTop_toTopOf="@+id/textView10"
+                    app:layout_constraintTop_toBottomOf="@+id/textView10"
+                    app:tint="@color/gray_color" />
+
+                <RelativeLayout
+                    android:id="@+id/tvValidUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/textView10"
+                    app:layout_constraintTop_toBottomOf="@+id/textView10">
+
+                    <EditText
+                        android:id="@+id/etInstituteUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/bg_rounded_1"
+                        android:editable="false"
+                        android:focusable="false"
+                        android:hint="Select"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/gray_light"
+                        android:textSize="18sp" />
+
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="15dp"
+                        android:src="@drawable/icon_arrow_down" />
+
+
+                    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                        android:id="@+id/etInstituteListUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        app:hint="Select"
+                        android:background="@color/transparent"
+                        />
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="15dp"
+                        android:text="@string/invalid"
+                        android:visibility="gone"
+                        android:textColor="@color/red"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="@+id/etInstituteListUsername"
+                        app:layout_constraintTop_toBottomOf="@+id/etInstituteListUsername" />
+                </RelativeLayout>
+
+
+                <!--<TextView
                     android:id="@+id/textView10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -311,16 +401,16 @@
                     android:id="@+id/etInstituteListUsername"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    app:hintText="Search by Institute"
                     android:textAlignment="textStart"
                     android:layout_marginHorizontal="15dp"
                     android:layout_marginTop="10dp"
+                    android:visibility="visible"
                     android:background="@drawable/bg_rounded_1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/textView10"
                     app:layout_constraintTop_toBottomOf="@+id/textView10"/>
 
-                <AutoCompleteTextView
+                <TextView
                     android:id="@+id/etInstituteUserne"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -328,9 +418,10 @@
                     android:layout_marginTop="10dp"
                     android:background="@drawable/bg_rounded_1"
                     android:inputType="textPersonName"
+                    android:hint="Search By Institute"
                     android:visibility="gone"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/gray_light"
+                    android:textColorHint="@color/black"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/textView10"
@@ -349,7 +440,7 @@
                     app:layout_constraintEnd_toEndOf="@+id/etInstituteListUsername"
                     app:layout_constraintTop_toBottomOf="@+id/etInstituteListUsername" />
 
-
+-->
                 <TextView
                     android:id="@+id/textView12"
                     android:layout_width="wrap_content"

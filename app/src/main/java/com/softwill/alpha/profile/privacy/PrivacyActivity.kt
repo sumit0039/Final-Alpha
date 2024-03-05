@@ -13,7 +13,9 @@ import com.softwill.alpha.databinding.ActivityPrivacyBinding
 import com.softwill.alpha.networking.RetrofitClient
 import com.softwill.alpha.profile.privacy.blockedPeople.BlockedPeopleActivity
 import com.softwill.alpha.profile.privacy.manageNotifications.ManageNotificationsActivity
+import com.softwill.alpha.utils.Constant
 import com.softwill.alpha.utils.UtilsFunctions
+import com.softwill.alpha.utils.YourPreference
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -23,18 +25,22 @@ import retrofit2.Response
 class PrivacyActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPrivacyBinding
-
+    var yourPreference: YourPreference? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_privacy)
 
-
+        yourPreference = YourPreference(this)
 
         setupBack()
         onClickListener()
         apiCurrentUserPrivacySettings()
 
-
+        binding.switchProfilePhoto.isChecked = yourPreference?.getProfilePrivacy(PrivacyConst.profilePicture) == true
+        binding.switchMobileNumber.isChecked = yourPreference?.getProfilePrivacy(PrivacyConst.mobileNumber) == true
+        binding.switchEmailAddress.isChecked = yourPreference?.getProfilePrivacy(PrivacyConst.Email) == true
+        binding.switchDateOfBirth.isChecked = yourPreference?.getProfilePrivacy(PrivacyConst.DOB) == true
+        binding.switchAboutMe.isChecked = yourPreference?.getProfilePrivacy(PrivacyConst.aboutBio) == true
     }
 
     private fun onClickListener() {

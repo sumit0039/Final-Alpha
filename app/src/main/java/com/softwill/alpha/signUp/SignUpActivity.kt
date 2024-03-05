@@ -53,7 +53,7 @@ class SignUpActivity : AppCompatActivity() {
     private var mStreamId: Int = -1
     private var mClassId: Int = -1
     private var instituteModel: InstituteModel? = null
-
+    val retailerListName = ArrayList<String>()
     var mFacilitiesList: ArrayList<String> = ArrayList()
     var mStreamsList: ArrayList<String> = ArrayList()
     var mClassList: ArrayList<String> = ArrayList()
@@ -77,9 +77,38 @@ class SignUpActivity : AppCompatActivity() {
         onClickListener()
         apiCheckInstitute()
 
+
+        binding.etInstituteListUsername.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                adapterView: AdapterView<*>,
+                view: View,
+                pos: Int,
+                l: Long
+            ) {
+
+                mInstituteId = mGetInstituteList[pos].instituteId
+                binding.etInstituteListUsername.setSelection(pos)
+                binding.etInstituteUsername.setText(mGetInstituteList[pos].name)
+                api_checkInstituteName(mGetInstituteList[pos].userName)
+
+
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+
+            }
+        }
+
     }
 
     private fun onClickListener() {
+
+        /*binding.etInstituteUserne.setOnClickListener{
+            setSpinnerInstitute(-1, -1,retailerListName)
+        }*/
+
+
 
         binding.btnSubmit.setOnClickListener {
 
@@ -157,7 +186,7 @@ class SignUpActivity : AppCompatActivity() {
 
         }
 
-        binding.ivInfo.setOnClickListener {
+        binding.info.setOnClickListener {
             userNameBottomSheet()
         }
 
@@ -181,7 +210,7 @@ class SignUpActivity : AppCompatActivity() {
             binding.viewAboutMe.setBackgroundColor(resources.getColor(R.color.faint_blue))
 
 
-//            binding.llBottom.visibility = View.GONE
+            binding.llBottom.visibility = View.VISIBLE
 
             mIsStudent = true
 
@@ -233,9 +262,6 @@ class SignUpActivity : AppCompatActivity() {
         }
 
 //        binding.etInstituteUsername.addTextChangedListener(textWatcher)
-
-       /* binding.etInstituteListUsername.setTitle("Select Institute")
-        binding.etInstituteListUsername.setPositiveButton("OK")*/
 
         binding.etUsername.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -356,7 +382,15 @@ class SignUpActivity : AppCompatActivity() {
                         val mList: List<GetInstitueListResponseItem> = Gson().fromJson(responseJson, listType)
                         mGetInstituteList.clear()
                         mGetInstituteList.addAll(mList)
-                        val retailerListName = ArrayList<String>()
+
+                        val item1 = GetInstitueListResponseItem(
+                            avtarUrl = "",
+                            instituteId = -1,
+                            name = "Select Institute",
+                            userName = "Select Institute"
+                        )
+                        // Add item at the first position
+                        mGetInstituteList.add(0, item1)
 
                         for (commonSpinner in mGetInstituteList) {
                             retailerListName.add(commonSpinner.name)
@@ -406,10 +440,12 @@ class SignUpActivity : AppCompatActivity() {
 
 
     private fun setSpinnerFaculties() {
+//        mFacilitiesList.add(0,"Select Department")
+
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mFacilitiesList)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         binding.spinnerFaculty.adapter = adapter
-        binding.spinnerFaculty.setSelection(0)
+        binding.spinnerFaculty.setSelection(-1)
         binding.spinnerFaculty.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>, view: View, pos: Int, l: Long) {
@@ -420,6 +456,7 @@ class SignUpActivity : AppCompatActivity() {
 
                 mStreamsList.clear()
                 for (streams in instituteModel?.faculties?.get(pos)?.streams!!) {
+//                    mStreamsList.add(0,"Select Branch")
                     mStreamsList.add(streams.streamName)
                 }
 
@@ -455,6 +492,7 @@ class SignUpActivity : AppCompatActivity() {
 
                     mClassList.clear()
                     for (classes in instituteModel?.faculties?.get(facultyPosition)?.streams?.get(pos)?.streamClasses!!) {
+//                        mClassList.add(0,"Select Class")
                         mClassList.add(classes.className)
                     }
                     if (mClassList.isNotEmpty()) {
@@ -479,36 +517,9 @@ class SignUpActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, retailerListName)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         binding.etInstituteListUsername.adapter = adapter
-//        binding.etInstituteListUsername.setSelection(0)
+        binding.etInstituteListUsername.setTitle("Select Institute")
+        binding.etInstituteListUsername.setPositiveButton("OK")
 
-        binding.etInstituteListUsername.onItemSelectedListener = object :
-            AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                adapterView: AdapterView<*>,
-                view: View,
-                pos: Int,
-                l: Long
-            ) {
-
-                val product = adapterView.selectedItem.toString()
-                val namePosition = adapter.getPosition(product)
-                mInstituteId = mGetInstituteList[namePosition].instituteId
-//                binding.etInstituteListUsername.setSelection(namePosition)
-                binding.etInstituteListUsername.setTitle(product)
-                Toast.makeText(this@SignUpActivity,mGetInstituteList[namePosition].name, Toast.LENGTH_LONG).show()
-
-                api_checkInstituteName(mGetInstituteList[namePosition].userName)
-
-                if(facultyPos != -1 && streamPos != -1){
-                    mClassId = instituteModel?.faculties?.get(facultyPos)?.streams?.get(streamPos)?.streamClasses?.get(pos)?.classId!!;
-
-                    println("mClassId : $mClassId")
-                }
-
-            }
-
-            override fun onNothingSelected(adapterView: AdapterView<*>?) {}
-        }
     }
 
     private fun api_checkInstituteName(name: String) {
@@ -524,15 +535,16 @@ class SignUpActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val responseJson = response.body()?.string()
                     if (!responseJson.isNullOrEmpty()) {
-                        binding.tvValidUserName.text = "Valid"
+//                        binding.tvValidUserName.text = "Valid"
                         binding.tvValidUserName.visibility = View.VISIBLE
-                        binding.tvValidUserName.setTextColor(ContextCompat.getColor(this@SignUpActivity, com.softwill.alpha.R.color.green));
+//                        binding.tvValidUserName.setTextColor(ContextCompat.getColor(this@SignUpActivity, com.softwill.alpha.R.color.green));
 
                         instituteModel = parseInstituteFromJson(responseJson)
 
                         mFacilitiesList.clear()
 
                         for (faculty in instituteModel?.faculties!!) {
+//                            mFacilitiesList.add(0,"Select Department")
                             mFacilitiesList.add(faculty.name)
                         }
 
@@ -546,13 +558,13 @@ class SignUpActivity : AppCompatActivity() {
                         }
 
                     }
-                    /*else{
+                    else{
                         resetSpinners()
-                    }*/
+                    }
                 } else {
                     binding.tvValidUserName.visibility = View.VISIBLE
-                    binding.tvValidUserName.text = "Invalid"
-                    binding.tvValidUserName.setTextColor(ContextCompat.getColor(this@SignUpActivity, R.color.red))
+//                    binding.tvValidUserName.text = "Invalid"
+//                    binding.tvValidUserName.setTextColor(ContextCompat.getColor(this@SignUpActivity, R.color.red))
                     UtilsFunctions().handleErrorResponse(response, this@SignUpActivity);
                 }
             }
@@ -599,6 +611,8 @@ class SignUpActivity : AppCompatActivity() {
 
             val facultiesArray = jsonObject.getJSONArray("faculties")
             val faculties = mutableListOf<FacultyModel>()
+            val streams = mutableListOf<StreamModel>()
+            val streamClasses = mutableListOf<StreamClassModel>()
 
             for (i in 0 until facultiesArray.length()) {
                 val facultyObject = facultiesArray.getJSONObject(i)
@@ -606,7 +620,7 @@ class SignUpActivity : AppCompatActivity() {
                 val facultyName = facultyObject.getString("name")
 
                 val streamsArray = facultyObject.getJSONArray("streams")
-                val streams = mutableListOf<StreamModel>()
+
 
                 for (j in 0 until streamsArray.length()) {
                     val streamObject = streamsArray.getJSONObject(j)
@@ -614,7 +628,6 @@ class SignUpActivity : AppCompatActivity() {
                     val streamName = streamObject.getString("streamName")
 
                     val streamClassesArray = streamObject.getJSONArray("stream_classes")
-                    val streamClasses = mutableListOf<StreamClassModel>()
 
                     for (k in 0 until streamClassesArray.length()) {
                         val streamClassObject = streamClassesArray.getJSONObject(k)
@@ -622,16 +635,28 @@ class SignUpActivity : AppCompatActivity() {
                         val className = streamClassObject.getString("className")
 
                         val streamClass = StreamClassModel(classId, className)
+
                         streamClasses.add(streamClass)
                     }
 
                     val stream = StreamModel(streamId, streamClasses, streamName)
+
                     streams.add(stream)
+
                 }
 
                 val faculty = FacultyModel(facultyId, facultyName, streams)
                 faculties.add(faculty)
+
             }
+            val item1 = StreamModel(-1, streamClasses, "Select Stream")
+            streams.add(0,item1)
+
+            val item = StreamClassModel(-1, "Select Class")
+            streamClasses.add(0,item)
+
+            val item2 = FacultyModel(-1, "Select Faculty", streams)
+            faculties.add(0,item2)
 
             InstituteModel(instituteId, faculties)
         } catch (e: JSONException) {

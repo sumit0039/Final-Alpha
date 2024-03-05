@@ -11,7 +11,9 @@ import com.google.gson.Gson
 import com.softwill.alpha.R
 import com.softwill.alpha.databinding.FragmentAboutBinding
 import com.softwill.alpha.networking.RetrofitClient
+import com.softwill.alpha.profile.privacy.PrivacyConst
 import com.softwill.alpha.profile_guest.model.GuestUserDetailsResponse
+import com.softwill.alpha.profile_guest.model.PrivacySetting
 import com.softwill.alpha.utils.Constant
 import com.softwill.alpha.utils.Constant.Companion.bloodGroup
 import com.softwill.alpha.utils.Constant.Companion.dob
@@ -225,6 +227,8 @@ class AboutFragment : Fragment() {
                             .split(",")
                     )
 
+                    responseObject.privacy_setting?.let { setPrivacySetting(it) }
+
 
                 } else {
                     UtilsFunctions().handleErrorResponse(response, requireActivity())
@@ -235,6 +239,14 @@ class AboutFragment : Fragment() {
                 t.printStackTrace()
             }
         })
+    }
+
+    private fun setPrivacySetting(privacySetting: PrivacySetting) {
+        YourPreference.setProfilePrivacy(PrivacyConst.aboutBio, privacySetting.aboutBio)
+        YourPreference.setProfilePrivacy(PrivacyConst.DOB,privacySetting.dob)
+        YourPreference.setProfilePrivacy(PrivacyConst.Email,privacySetting.email)
+        YourPreference.setProfilePrivacy(PrivacyConst.mobileNumber,privacySetting.mobileNumber)
+        YourPreference.setProfilePrivacy(PrivacyConst.profilePicture,privacySetting.profilePicture)
     }
 
 

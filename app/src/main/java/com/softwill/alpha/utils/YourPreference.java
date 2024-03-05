@@ -58,6 +58,19 @@ public class YourPreference {
         prefsEditor.commit();
     }
 
+    public static void setProfilePrivacy(String key,Boolean privacySetting) {
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        prefsEditor.putBoolean(key, privacySetting);
+        prefsEditor.commit();
+    }
+
+    public boolean getProfilePrivacy(String privacySetting) {
+        if (sharedPreferences!= null) {
+            return sharedPreferences.getBoolean(privacySetting, false);
+        }
+        return false;
+    }
+
     public String getData(String key) {
         if (sharedPreferences!= null) {
             return sharedPreferences.getString(key, null);
