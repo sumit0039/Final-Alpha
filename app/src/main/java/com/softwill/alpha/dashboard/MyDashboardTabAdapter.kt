@@ -14,10 +14,10 @@ class MyDashboardTabAdapter(
     // this is for fragment tabs
     override fun getItem(position: Int): Fragment {
         return when (position) {
-          /*  0 -> {
-                //  val homeFragment: HomeFragment = HomeFragment()
-                ReportFragment()
-            }*/
+//            0 -> {
+//                //  val homeFragment: HomeFragment = HomeFragment()
+//                ReportFragment()
+//            }
 
             1 -> {
                 DashboardFragment()

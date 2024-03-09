@@ -75,6 +75,19 @@
 
             </androidx.appcompat.widget.Toolbar>
 
+            <ProgressBar
+                android:id="@+id/loader"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:visibility="visible"
+                android:indeterminateDrawable="@drawable/customprogressbar"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swiperefresh"
                 android:layout_width="match_parent"
@@ -84,7 +97,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar">
-
 
                 <LinearLayout
                     android:layout_width="match_parent"

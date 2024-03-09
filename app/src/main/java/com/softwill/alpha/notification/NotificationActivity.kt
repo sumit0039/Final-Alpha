@@ -58,7 +58,7 @@ class NotificationActivity : AppCompatActivity(), RequestFragment.RequestFragmen
         val tvCount1 = tabOne.findViewById<TextView>(R.id.tvCount)
         val cardView1 = tabOne.findViewById<CardView>(R.id.tab_cardView)
         tvTitle1.text = resources.getString(com.softwill.alpha.R.string.general)
-        tvCount1.text = "8"
+        tvCount1.text = "0"
         binding.tabLayout.getTabAt(1)?.customView = tabOne
 
 

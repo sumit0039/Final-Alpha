@@ -110,7 +110,7 @@ class OTPActivity : AppCompatActivity() {
             } else if (mOtp.toString().trim().length < 4) {
                 binding.tvError.text = "OTP must be 4 digits"
             } else {
-                binding.btnSubmit.isEnabled=false
+//                binding.btnSubmit.isEnabled=false
 
                 if (mChangeMobile == false) {
                     api_verifyOTP()
@@ -176,14 +176,14 @@ class OTPActivity : AppCompatActivity() {
                     val message = responseObject.getString("message")
                     val registration = responseObject.getString("registration")
 
-                    if (message == "Otp verified successfully" && registration == "pending") {
+                    if (/*message == "Otp verified successfully" && */registration == "pending") {
                         val intent = Intent(this@OTPActivity, SignUpActivity::class.java)
                         intent.putExtra("mNumber", mNumber)
                         startActivity(intent)
                         finish()
                         binding.btnSubmit.isClickable=true
                         binding.btnSubmit.isEnabled=true
-                    } else if (message == "Otp verified successfully" && registration == "completed") {
+                    } else /*if (message == "Otp verified successfully" && registration == "completed")*/ {
                         val userType = responseObject.getString("userType")
                         val token = responseObject.getString("token")
                         val approvedByInstite = responseObject.getString("approvedByInstite")

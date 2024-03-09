@@ -40,6 +40,7 @@ class RequestFragment : Fragment(), RequestSubAdapter.CallbackInterface {
     val mRequestMainModel = ArrayList<RequestMainModel>()
     private var mListener: RequestFragmentInterface? = null
 //    private var chatUserModel: ChatUserModel? = null
+    private var requestMainModel: RequestMainModel? = null
 
 
     override fun onCreateView(
@@ -104,12 +105,15 @@ class RequestFragment : Fragment(), RequestSubAdapter.CallbackInterface {
                 if (response.isSuccessful) {
                     val responseJson = response.body()?.string()
                     val requests = Gson().fromJson(responseJson, Array<RequestMainModel>::class.java).toList()
+//                    requestMainModel = Gson().fromJson(responseJson, RequestMainModel::class.java)
                     mRequestMainModel.clear()
 
                     mRequestMainModel.addAll(requests)
-
-
-                    mListener?.requestsCount(mRequestMainModel.size)
+                    var count=0
+                    for (i in requests){
+                        count=+i.requests.size
+                    }
+                    mListener?.requestsCount(count)
 
 
                     if (mRequestMainModel.isNotEmpty()) {
@@ -117,7 +121,7 @@ class RequestFragment : Fragment(), RequestSubAdapter.CallbackInterface {
                     }
 
 
-                    println("Total Request Count : ${mRequestMainModel.size}")
+                    println("Total Request Count : $count")
 
                 } else {
                     UtilsFunctions().handleErrorResponse(response, requireActivity())

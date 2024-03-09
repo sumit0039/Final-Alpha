@@ -196,6 +196,9 @@ class SignUpActivity : AppCompatActivity() {
 
 
         binding.llStudent.setOnClickListener {
+
+            apiCheckInstitute()
+
             binding.tvStudent.setTextColor(
                 ContextCompat.getColor(
                     applicationContext,
@@ -232,6 +235,9 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         binding.llTeacher.setOnClickListener {
+
+            apiCheckInstitute()
+
             binding.tvTeacher.setTextColor(
                 ContextCompat.getColor(
                     applicationContext,

@@ -21,6 +21,10 @@
         <item name="android:calendarViewStyle">@style/CalenderViewCustom</item>
     </style>
 
+    <style name="LottieAnimationStyle">
+        <item name="android:tint">@color/blue</item>
+    </style>
+
     <style name="Widget.CalendarView.Custom" parent="android:Widget.CalendarView">
         <item name="android:focusedMonthDateColor">@color/blue</item>
         <item name="android:weekNumberColor">@color/blue</item>

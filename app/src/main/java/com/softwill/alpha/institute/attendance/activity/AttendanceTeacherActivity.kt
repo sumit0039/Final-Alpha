@@ -445,7 +445,7 @@ class AttendanceTeacherActivity : AppCompatActivity(), AttendanceTeacherAdapter.
 
     override fun studentAbsentPresentCallback(attendance: Attendance, student: Student) {
 
-        Toast.makeText(this@AttendanceTeacherActivity,student.toString(),Toast.LENGTH_LONG).show()
+//        Toast.makeText(this@AttendanceTeacherActivity,student.toString(),Toast.LENGTH_LONG).show()
         attendance.let { attendances.add(it) }
         updateStudentsAttendance = UpdateStudentsAttendance(attendances,mClassId,mSubjectId)
 

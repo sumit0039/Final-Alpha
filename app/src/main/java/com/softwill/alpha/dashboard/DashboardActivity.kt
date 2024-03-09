@@ -70,7 +70,7 @@ class DashboardActivity : AppCompatActivity(){
 
         Handler(Looper.getMainLooper()).postDelayed(Runnable {
             doubleBackToExitPressedOnce = false
-        }, 2000)
+        }, 1000)
     }
 
 

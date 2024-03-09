@@ -355,7 +355,7 @@ class ChatRecyclerAdapter(
 
                 try {
                     if(model.message.equals("")){
-                        if (model.fileName.isNotEmpty() &&  model.fileName.endsWith("png")) {
+                        if (model.fileName.isNotEmpty() && (model.fileName.endsWith("png") || model.fileName.endsWith("jpg")) ) {
                             binding.rightAttachmentLayouts.visibility = View.VISIBLE
                             binding.rightAttachment.visibility = View.VISIBLE
                             binding.rightsAttachmentTimeTextview.visibility = View.VISIBLE
@@ -423,7 +423,7 @@ class ChatRecyclerAdapter(
 
                 try {
                     if(model.message.equals("")){
-                        if(model.fileName.isNotEmpty() && model.fileName.endsWith("png")){
+                        if(model.fileName.isNotEmpty() && (model.fileName.endsWith("png") || model.fileName.endsWith("jpg"))){
                             binding.leftAttachmentLayouts.visibility=View.VISIBLE
                             binding.leftChatLayout.visibility=View.GONE
                             binding.leftChatLayouts.visibility=View.GONE

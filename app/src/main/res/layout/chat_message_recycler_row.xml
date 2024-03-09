@@ -297,6 +297,9 @@
                 android:layout_height="200dp"
                 android:layout_gravity="end|center"
                 android:visibility="gone"
+                android:padding="4dp"
+                android:background="@drawable/button_stroke"
+                android:backgroundTint="@color/blue"
                 android:src="@drawable/icon_no_image"
                 android:scaleType="fitXY"/>
 

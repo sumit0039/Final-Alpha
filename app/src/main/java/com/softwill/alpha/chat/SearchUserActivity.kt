@@ -65,16 +65,11 @@ class SearchUserActivity : AppCompatActivity(),RecentChatRecyclerAdapter.Callbac
 
     private fun setupSearchRecyclerView() {
 
-        // Set the query listener for the SearchView
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                // Handle search query submission (optional)
-                return false
-            }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                // Handle search query text change
-                if(newText.toString().isNotEmpty() && newText.toString().length >= 3){
+            override fun onQueryTextChange(newText: String): Boolean {
+
+                if(newText.length >= 3){
                     filterData(newText)
                     binding.recentChatRecyclerView.visibility=View.GONE
                     binding.title.visibility=View.GONE
@@ -86,11 +81,14 @@ class SearchUserActivity : AppCompatActivity(),RecentChatRecyclerAdapter.Callbac
                     binding.titles.visibility=View.VISIBLE
                     setupConnections()
                 }
-                return true
+                return false
             }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
         })
-
-
 
     }
 
@@ -133,10 +131,10 @@ class SearchUserActivity : AppCompatActivity(),RecentChatRecyclerAdapter.Callbac
         for (item in mConnectionListModel) {
             if (item.name.lowercase(Locale.ROOT).contains(newText!!.lowercase(Locale.getDefault()))) {
                 filteredList.add(item)
-            }else{
+            }/*else{
                 binding.chatLl.visibility=View.GONE
                 binding.noResultFound.visibility=View.VISIBLE
-            }
+            }*/
             mConnectionAdapter?.filterList(filteredList)
         }
         binding.titles.visibility=View.VISIBLE

@@ -22,7 +22,7 @@
     <string name="email_address">Email address</string>
     <string name="email_address2">Email Address</string>
     <string name="institute_username">Institute username</string>
-    <string name="username">username</string>
+    <string name="username">Username</string>
     <string name="invalid">Invalid</string>
     <string name="uploaded">Uploaded</string>
     <string name="faculty">Department</string>
@@ -60,7 +60,7 @@
     <string name="edit_diary">Edit Diary</string>
     <string name="add_complaint">Add Complaint</string>
     <string name="change_username">Change Username</string>
-    <string name="change_institute">Change Institute</string>
+    <string name="change_institute">Change Institute / Class</string>
     <string name="available">Available</string>
     <string name="change_faculty">Change Faculty</string>
     <string name="select_faculty">Select faculty</string>

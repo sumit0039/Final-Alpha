@@ -25,6 +25,8 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.softwill.alpha.R
+import com.softwill.alpha.dashboard.DialogFragment
+import com.softwill.alpha.dashboard.LoaderUtil
 import com.softwill.alpha.databinding.FragmentHomeBinding
 import com.softwill.alpha.home.activity.PostVIewDetailActivity
 import com.softwill.alpha.home.activity.SearchHomeActivity
@@ -69,6 +71,10 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
 
     val mConnectionListModel = java.util.ArrayList<ConnectionListModel>()
 
+    private lateinit var frameLayout: FrameLayout
+    private lateinit var loader: ProgressBar // or any other loader view
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -83,7 +89,7 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
         super.onViewCreated(view, savedInstanceState)
         yourPreference = YourPreference(activity)
 
-
+        binding.loader.visibility=View.VISIBLE
         //9589YourPreference.saveData(Constant.IsStudentLogin, false)
 
         apiUserPushNotificationToken()
@@ -142,17 +148,7 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
                                 val responseJson = response.body()?.string()
                                 val responseObject = JSONObject(responseJson.toString())
 
-                                if (responseObject.has("message")) {
-                                    var message = responseObject.getString("message");
-
-                                    if (message == "Updated successfully") {
-
-
-
-                                    }
-
-
-                                } else if (responseObject.has("error")) {
+                               if (responseObject.has("error")) {
                                     UtilsFunctions().showToast(
                                         requireActivity(), responseObject.getString("error")
                                     )
@@ -504,7 +500,8 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
     }
 
     private fun apiCurrentUserDetails() {
-        // progressDialog = UtilsFunctions().showCustomProgressDialog(requireContext())
+//        LoaderUtil.showLoader(frameLayout, loader)
+//         progressDialog = UtilsFunctions().showCustomProgressDialog(requireContext())
 
         val call: Call<ResponseBody> =
             RetrofitClient.getInstance(requireActivity()).myApi.api_CurrentUserDetails()
@@ -603,6 +600,7 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
                 t.printStackTrace()
             }
         })
+
     }
 
 
@@ -650,6 +648,9 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
 //                progressDialog?.dismiss()
             }
         })
+
+        binding.loader.visibility=View.GONE
+
     }
 
     private fun apiPostLikeUnLike(id: Int, position: Int, llLikeUnlike: LinearLayout) {
