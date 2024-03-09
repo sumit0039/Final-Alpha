@@ -142,17 +142,7 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
                                 val responseJson = response.body()?.string()
                                 val responseObject = JSONObject(responseJson.toString())
 
-                                if (responseObject.has("message")) {
-                                    var message = responseObject.getString("message");
-
-                                    if (message == "Updated successfully") {
-
-
-
-                                    }
-
-
-                                } else if (responseObject.has("error")) {
+                               if (responseObject.has("error")) {
                                     UtilsFunctions().showToast(
                                         requireActivity(), responseObject.getString("error")
                                     )

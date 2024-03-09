@@ -585,4 +585,14 @@ public interface APIInterface {
     @POST("/api/teacher/add_student_attendance")
     Call<ResponseBody> api_UpdateStudentsAttendanceList(@Body UpdateStudentsAttendance updateStudentsAttendance);
 
+    @GET("api/student/attendance?groupBy=currentClass")
+    Call<ResponseBody> api_AttendanceGroupByCurrentClass();
+
+    @GET("api/student/attendance?groupBy=day")
+    Call<ResponseBody> api_AttendanceGroupByDay();
+
+    @GET("api/student/attendance?groupBy=month")
+    Call<ResponseBody> api_AttendanceGroupByMonth();
+
+
 }

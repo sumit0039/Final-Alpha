@@ -14,19 +14,27 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import com.softwill.alpha.R
 import com.softwill.alpha.databinding.ActivitySettingBinding
 import com.softwill.alpha.networking.RetrofitClient
 import com.softwill.alpha.otp.OTPActivity
 import com.softwill.alpha.profile.tabActivity.PostModel
 import com.softwill.alpha.signIn.SignInActivity
+import com.softwill.alpha.signUp.model.FacultyModel
+import com.softwill.alpha.signUp.model.GetInstitueListResponseItem
+import com.softwill.alpha.signUp.model.InstituteModel
+import com.softwill.alpha.signUp.model.StreamClassModel
+import com.softwill.alpha.signUp.model.StreamModel
 import com.softwill.alpha.utils.Constant
 import com.softwill.alpha.utils.UtilsFunctions
 import com.softwill.alpha.utils.YourPreference
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner
 import okhttp3.ResponseBody
 import org.json.JSONArray
 import org.json.JSONException
@@ -48,7 +56,32 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
     var mSpinnerList: ArrayList<String> = ArrayList()
     lateinit var spinner: Spinner
     lateinit var etSelectedValue: EditText
+
     var IsStudentLogin: Boolean = true
+
+
+    private val mGetInstituteList = java.util.ArrayList<GetInstitueListResponseItem>()
+
+    private var mIsStudent: Boolean = true
+    private var mInstituteId: Int = -1
+    private var mFacultyId: Int = -1
+    private var mStreamId: Int = -1
+    private var mClassId: Int = -1
+    private var instituteModel: InstituteModel? = null
+    val retailerListName = ArrayList<String>()
+    var mFacilitiesList: ArrayList<String> = ArrayList()
+    var mStreamsList: ArrayList<String> = ArrayList()
+    var mClassList: ArrayList<String> = ArrayList()
+
+    lateinit var etInstituteUsername: EditText
+    lateinit var etInstituteListUsername: SearchableSpinner
+    lateinit var etFaculty: EditText
+    lateinit var etStream: EditText
+    lateinit var etClass: EditText
+    lateinit var spinnerFaculty: Spinner
+    lateinit var spinnerStream: Spinner
+    lateinit var spinnerClass: Spinner
+    lateinit var btnChange: AppCompatButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +145,13 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                 changeUsernameBottomSheet()
             }
             R.id.tvChangeInstitute -> {
+
+                println("InstituteUserName : "+yourPreference?.getData(Constant.instituteName))
+                println("FacultyId : "+yourPreference?.getData(Constant.instituteFacultyId))
+                println("StreamId : "+yourPreference?.getData(Constant.instituteStreamId))
+                println("ClassId : "+yourPreference?.getData(Constant.instituteStreamClassId))
+
+                apiCheckInstitute()
                 changeInstituteBottomSheet()
             }
             R.id.tvChangeFaculty -> {
@@ -195,9 +235,29 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val view = layoutInflater.inflate(R.layout.bottomsheet_change_institute, null)
 
 
-        val btnChange = view.findViewById<Button>(R.id.btnChange)
+        etInstituteUsername = view.findViewById<EditText>(R.id.etInstituteUsername)
+        etInstituteListUsername = view.findViewById<SearchableSpinner>(R.id.etInstituteListUsername)
+        etFaculty = view.findViewById<EditText>(R.id.etFaculty)
+        etStream = view.findViewById<EditText>(R.id.etStream)
+        etClass = view.findViewById<EditText>(R.id.etClass)
+        spinnerFaculty = view.findViewById<Spinner>(R.id.spinnerFaculty)
+        spinnerStream = view.findViewById<Spinner>(R.id.spinnerStream)
+        spinnerClass = view.findViewById<Spinner>(R.id.spinnerClass)
+
+        btnChange = view.findViewById<AppCompatButton>(R.id.btnChange)
 
         btnChange.setOnClickListener {
+            if(mInstituteId==-1){
+                Toast.makeText(this,"Please select Institute", Toast.LENGTH_LONG).show()
+            }else if(mFacultyId==-1){
+                Toast.makeText(this,"Please select department", Toast.LENGTH_LONG).show()
+            }else if(mStreamId==-1){
+                Toast.makeText(this,"Please select branch", Toast.LENGTH_LONG).show()
+            }else if(mClassId==-1){
+                Toast.makeText(this,"Please select class", Toast.LENGTH_LONG).show()
+            }else{
+                apiUpdateProfileSettings("instituteId", yourPreference?.getData(Constant.userName).toString(), dialog)
+            }
             dialog.dismiss()
         }
         dialog.setCanceledOnTouchOutside(true)
@@ -205,7 +265,344 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         dialog.setContentView(view)
         dialog.show()
 
+        etInstituteListUsername.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                adapterView: AdapterView<*>,
+                view: View,
+                pos: Int,
+                l: Long
+            ) {
 
+
+                mInstituteId = mGetInstituteList[pos].instituteId
+                etInstituteListUsername.setSelection(pos)
+                etInstituteUsername.setText(mGetInstituteList[pos].name)
+                api_checkInstituteName(mGetInstituteList[pos].userName)
+
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+
+            }
+        }
+
+
+    }
+
+    private fun apiCheckInstitute() {
+
+        val call: Call<ResponseBody> = RetrofitClient.getInstance(this@SettingActivity).myApi.api_GetInstituteList()
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val responseJson = response.body()?.string()
+                    if (!responseJson.isNullOrEmpty()) {
+                        val listType = object : TypeToken<List<GetInstitueListResponseItem>>() {}.type
+                        val mList: List<GetInstitueListResponseItem> = Gson().fromJson(responseJson, listType)
+                        mGetInstituteList.clear()
+                        mGetInstituteList.addAll(mList)
+
+                        val item1 = GetInstitueListResponseItem(
+                            avtarUrl = "",
+                            instituteId = -1,
+                            name = "Select Institute",
+                            userName = ""
+                        )
+                        // Add item at the first position
+                        mGetInstituteList.add(0, item1)
+
+                        for (commonSpinner in mGetInstituteList) {
+
+                            retailerListName.add(commonSpinner.name+"\n"+(Html.fromHtml("<font color=\"#808080\">" + commonSpinner.userName + "</font>")))
+                        }
+                        setSpinnerInstitute(-1, -1,retailerListName)
+                        resetSpinners()
+                    }
+
+                } else {
+                    UtilsFunctions().handleErrorResponse(response, this@SettingActivity);
+                }
+
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                t.printStackTrace()
+            }
+
+        })
+
+    }
+
+
+    private fun resetSpinners() {
+
+        mInstituteId = -1
+
+        //Clear Faculty Spinner
+        mFacilitiesList.clear()
+        mFacultyId = -1;
+        etFaculty.text.clear()
+        setSpinnerFaculties()
+
+
+        //Clear Stream Spinner
+        mStreamsList.clear()
+        mStreamId = -1;
+        etStream.text.clear()
+        setSpinnerStream(-1)
+
+        //Clear Stream Spinner
+        mClassList.clear()
+        mClassId = -1;
+        etClass.text.clear()
+        setSpinnerClass(-1, -1)
+    }
+
+
+    private fun setSpinnerFaculties() {
+
+        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mFacilitiesList)
+        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
+        spinnerFaculty.adapter = adapter
+
+        if(yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
+            etFaculty.setText(yourPreference?.getData(Constant.facultyName))
+            spinnerFaculty.setSelection(mFacilitiesList.indexOf(yourPreference?.getData(Constant.facultyName)))
+        }else{
+            spinnerFaculty.setSelection(0)
+        }
+
+        spinnerFaculty.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(adapterView: AdapterView<*>, view: View, pos: Int, l: Long) {
+                val value = adapterView.getItemAtPosition(pos).toString()
+                etFaculty.setText(spinnerFaculty.selectedItem.toString())
+
+                mFacultyId = instituteModel?.faculties?.get(pos)?.facultyId!!
+
+                mStreamsList.clear()
+                for (streams in instituteModel?.faculties?.get(pos)?.streams!!) {
+//                    mStreamsList.add(0,"Select Branch")
+                    mStreamsList.add(streams.streamName)
+                }
+
+                if (mStreamsList.isNotEmpty()) {
+                    setSpinnerStream(pos)
+                }
+
+                System.out.println("mFacultyId : $mFacultyId")
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {}
+        }
+    }
+
+    private fun setSpinnerStream(facultyPosition: Int) {
+        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mStreamsList)
+        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
+        spinnerStream.adapter = adapter
+        if(yourPreference?.getData(Constant.instituteStreamId)!!.toInt()!=-1){
+
+            etStream.setText(yourPreference?.getData(Constant.streamName))
+            spinnerStream.setSelection(mStreamsList.indexOf(yourPreference?.getData(Constant.instituteStreamId)))
+        }else {
+            spinnerStream.setSelection(0)
+        }
+
+        spinnerStream.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                adapterView: AdapterView<*>,
+                view: View,
+                pos: Int,
+                l: Long
+            ) {
+
+                val value = adapterView.getItemAtPosition(pos).toString()
+
+                etStream.setText(spinnerStream.selectedItem.toString())
+
+                if(facultyPosition != -1){
+                    mStreamId = instituteModel?.faculties?.get(facultyPosition)?.streams?.get(pos)?.streamId!!;
+
+                    mClassList.clear()
+                    for (classes in instituteModel?.faculties?.get(facultyPosition)?.streams?.get(pos)?.streamClasses!!) {
+//                        mClassList.add(0,"Select Class")
+                        mClassList.add(classes.className)
+                    }
+                    if (mClassList.isNotEmpty()) {
+                        setSpinnerClass(facultyPosition, pos)
+                    }
+
+                    System.out.println("mStreamId : $mStreamId")
+                }
+
+
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+
+            }
+        }
+    }
+
+    private fun setSpinnerInstitute(
+        facultyPos: Int,
+        streamPos: Int,
+        retailerListName: ArrayList<String>
+    ) {
+        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, retailerListName)
+        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
+        etInstituteListUsername.adapter = adapter
+        etInstituteListUsername.setTitle("Select Institute")
+        etInstituteListUsername.setPositiveButton("OK")
+    }
+
+    private fun api_checkInstituteName(name: String) {
+
+        val jsonObject = JsonObject().apply {
+            addProperty("instituteUsername", name)
+        }
+
+        val call: Call<ResponseBody> = RetrofitClient.getInstance(this@SettingActivity).myApi.api_CheckInstitute(jsonObject)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val responseJson = response.body()?.string()
+                    if (!responseJson.isNullOrEmpty()) {
+
+                        instituteModel = parseInstituteFromJson(responseJson)
+
+                        mFacilitiesList.clear()
+
+                        for (faculty in instituteModel?.faculties!!) {
+//                            mFacilitiesList.add(0,"Select Department")
+                            mFacilitiesList.add(faculty.name)
+                        }
+
+//                        val textView = findViewById<View>(com.softwill.alpha.R.id.etInstituteUsername) as AutoCompleteTextView
+
+
+                        mInstituteId = instituteModel!!.instituteId
+
+                        if (mFacilitiesList.isNotEmpty()) {
+                            setSpinnerFaculties()
+                        }
+
+                    }
+                    else{
+                        resetSpinners()
+                    }
+                } else {
+//                    tvValidUserName.visibility = View.VISIBLE
+//                    tvValidUserName.text = "Invalid"
+//                    tvValidUserName.setTextColor(ContextCompat.getColor(this@SettingActivity, R.color.red))
+                    UtilsFunctions().handleErrorResponse(response, this@SettingActivity);
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    private fun setSpinnerClass(facultyPos: Int, streamPos: Int) {
+        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mClassList)
+        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
+        spinnerClass.adapter = adapter
+        if(yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
+            etClass.setText(yourPreference?.getData(Constant.className))
+            spinnerClass.setSelection(mClassList.indexOf(yourPreference?.getData(Constant.className)))
+        }else{
+            spinnerClass.setSelection(0)
+        }
+        spinnerClass.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                adapterView: AdapterView<*>,
+                view: View,
+                pos: Int,
+                l: Long
+            ) {
+                val value = adapterView.getItemAtPosition(pos).toString()
+                etClass.setText(spinnerClass.selectedItem.toString())
+
+
+                if(facultyPos != -1 && streamPos != -1){
+                    mClassId = instituteModel?.faculties?.get(facultyPos)?.streams?.get(streamPos)?.streamClasses?.get(pos)?.classId!!;
+
+                    System.out.println("mClassId : $mClassId")
+                }
+
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {}
+        }
+    }
+
+    private fun parseInstituteFromJson(jsonString: String?): InstituteModel? {
+        return try {
+            val jsonObject = JSONObject(jsonString!!)
+            val instituteId = jsonObject.getInt("instituteId")
+
+            val facultiesArray = jsonObject.getJSONArray("faculties")
+            val faculties = mutableListOf<FacultyModel>()
+            val streams = mutableListOf<StreamModel>()
+            val streamClasses = mutableListOf<StreamClassModel>()
+
+            for (i in 0 until facultiesArray.length()) {
+                val facultyObject = facultiesArray.getJSONObject(i)
+                val facultyId = facultyObject.getInt("facultyId")
+                val facultyName = facultyObject.getString("name")
+
+                val streamsArray = facultyObject.getJSONArray("streams")
+
+
+                for (j in 0 until streamsArray.length()) {
+                    val streamObject = streamsArray.getJSONObject(j)
+                    val streamId = streamObject.getInt("streamId")
+                    val streamName = streamObject.getString("streamName")
+
+                    val streamClassesArray = streamObject.getJSONArray("stream_classes")
+
+                    for (k in 0 until streamClassesArray.length()) {
+                        val streamClassObject = streamClassesArray.getJSONObject(k)
+                        val classId = streamClassObject.getInt("classId")
+                        val className = streamClassObject.getString("className")
+
+                        val streamClass = StreamClassModel(classId, className)
+
+                        streamClasses.add(streamClass)
+                    }
+
+                    val stream = StreamModel(streamId, streamClasses, streamName)
+
+                    streams.add(stream)
+
+                }
+
+                val faculty = FacultyModel(facultyId, facultyName, streams)
+                faculties.add(faculty)
+
+            }
+            val item1 = StreamModel(-1, streamClasses, "Select Stream")
+            streams.add(0,item1)
+
+            val item = StreamClassModel(-1, "Select Class")
+            streamClasses.add(0,item)
+
+            val item2 = FacultyModel(-1, "Select Faculty", streams)
+            faculties.add(0,item2)
+
+            InstituteModel(instituteId, faculties)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            null
+        }
     }
 
     private fun changeFacultyBottomSheet(type: String) {
@@ -238,13 +635,10 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
             apiUpdateProfileSettings(type, mSelectedId.toString(), dialog)
         }
 
-
-
         dialog.setCanceledOnTouchOutside(true)
         dialog.setCancelable(true)
         dialog.setContentView(view)
         dialog.show()
-
 
     }
 
@@ -281,6 +675,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
 
 
     private fun LogoutBottomSheet() {
+
         val dialog = BottomSheetDialog(this, R.style.AppBottomSheetDialogTheme)
         val view = layoutInflater.inflate(R.layout.bottomsheet_logout, null)
 
@@ -313,8 +708,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val tvChangeString = view.findViewById<TextView>(R.id.tvChangeString)
 
 
-        val wordtoSpan: Spannable =
-            SpannableString("Enter “Student” in the box")
+        val wordtoSpan: Spannable = SpannableString("Enter “Student” in the box")
 
         wordtoSpan.setSpan(
             ForegroundColorSpan(resources.getColor(R.color.primary_color)), 6, 14,
@@ -334,17 +728,16 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         dialog.setCancelable(true)
         dialog.setContentView(view)
         dialog.show()
+
     }
 
     private fun apiChangeMobileNumber(value: String, dialog: BottomSheetDialog) {
+
         val jsonObject = JsonObject().apply {
             addProperty("mobile", value)
         }
 
-        val call: Call<ResponseBody> =
-            RetrofitClient.getInstance(this@SettingActivity).myApi.api_ChangeMobileNumber(
-                jsonObject
-            )
+        val call: Call<ResponseBody> = RetrofitClient.getInstance(this@SettingActivity).myApi.api_ChangeMobileNumber(jsonObject)
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
@@ -388,10 +781,13 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val jsonObject = JsonObject().apply {
             when (type) {
                 "userName" -> addProperty("userName", value)
-                "instituteId" -> addProperty("instituteId", value)
-                "facultyId" -> addProperty("facultyId", value)
-                "streamId" -> addProperty("streamId", value)
-                "classId" -> addProperty("classId", value)
+                "instituteId" -> {
+                    addProperty("userName", value)
+                    addProperty("instituteId", mInstituteId)
+                    addProperty("facultyId", mFacultyId)
+                    addProperty("streamId", mStreamId)
+                    addProperty("classId", mClassId)
+                }
             }
         }
 
@@ -410,27 +806,32 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
 
                     if (responseObject.has("message")) {
 
-                        if (type == "userName") {
-                            YourPreference.saveData(Constant.userName, value)
-                        } else if (type == "facultyId") {
-                            YourPreference.saveData(Constant.instituteFacultyId, value)
-                            YourPreference.saveData(
-                                Constant.facultyName,
-                                etSelectedValue.text.toString().trim()
-                            )
-                        } else if (type == "streamId") {
-                            YourPreference.saveData(Constant.instituteStreamId, value)
-                            YourPreference.saveData(
-                                Constant.streamName,
-                                etSelectedValue.text.toString().trim()
-                            )
-                        } else if (type == "classId") {
-                            YourPreference.saveData(Constant.instituteStreamClassId, value)
-                            YourPreference.saveData(
-                                Constant.className,
-                                etSelectedValue.text.toString().trim()
-                            )
-                        }
+//                        if (type == "userName") {
+                        YourPreference.saveData(Constant.userName, value)
+//                        } else if (type == "facultyId") {
+                        YourPreference.saveData(Constant.instituteUsername, mInstituteId)
+                        YourPreference.saveData(
+                            Constant.instituteName,
+                            etInstituteUsername.text.toString().trim()
+                        )
+                        YourPreference.saveData(Constant.instituteFacultyId, mFacultyId)
+                        YourPreference.saveData(
+                            Constant.facultyName,
+                            etFaculty.text.toString().trim()
+                        )
+//                        } else if (type == "streamId") {
+                        YourPreference.saveData(Constant.instituteStreamId, mStreamId)
+                        YourPreference.saveData(
+                            Constant.streamName,
+                            etStream.text.toString().trim()
+                        )
+//                        } else if (type == "classId") {
+                        YourPreference.saveData(Constant.instituteStreamClassId, mClassId)
+                        YourPreference.saveData(
+                            Constant.className,
+                            etClass.text.toString().trim()
+                        )
+//                        }
 
                         UtilsFunctions().showToast(
                             this@SettingActivity,
@@ -456,8 +857,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun apiLogout() {
 
-        val call: Call<ResponseBody> =
-            RetrofitClient.getInstance(this@SettingActivity).myApi.api_logout()
+        val call: Call<ResponseBody> = RetrofitClient.getInstance(this@SettingActivity).myApi.api_logout()
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
