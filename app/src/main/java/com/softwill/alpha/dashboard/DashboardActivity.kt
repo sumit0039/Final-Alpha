@@ -12,12 +12,13 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.FirebaseMessagingService
 import com.softwill.alpha.R
 import com.softwill.alpha.chat.FirebaseUtil
 import com.softwill.alpha.databinding.ActivityDashboardBinding
 
 
-class DashboardActivity : AppCompatActivity() {
+class DashboardActivity : AppCompatActivity(){
 
     private lateinit var binding: ActivityDashboardBinding
     private var doubleBackToExitPressedOnce = false
@@ -29,7 +30,7 @@ class DashboardActivity : AppCompatActivity() {
         val actionBar: ActionBar? = supportActionBar
         actionBar?.hide()
 
-        val adapter = MyDashboardTabAdapter(this, supportFragmentManager, 2)
+        val adapter = MyDashboardTabAdapter(this, supportFragmentManager, 1)
         binding.viewPager.adapter = adapter
 
         binding.viewPager.setCurrentItem(1, true)

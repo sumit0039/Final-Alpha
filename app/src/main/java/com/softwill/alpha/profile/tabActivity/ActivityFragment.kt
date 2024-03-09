@@ -328,9 +328,9 @@ class ActivityFragment : Fragment(), ActivityPostAdapter.CallbackInterface , Com
         })
 
 
-        mShareAdapter = ShareAdapter(mConnectionListModel, requireActivity())
-        rvShare.adapter = mShareAdapter
-        mShareAdapter!!.notifyDataSetChanged()
+//        mShareAdapter = ShareAdapter(mConnectionListModel, photos, requireActivity())
+//        rvShare.adapter = mShareAdapter
+//        mShareAdapter!!.notifyDataSetChanged()
 
 
         dialog?.setCanceledOnTouchOutside(true)

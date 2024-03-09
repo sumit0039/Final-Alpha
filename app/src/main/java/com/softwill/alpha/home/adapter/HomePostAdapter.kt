@@ -3,7 +3,6 @@ package com.softwill.alpha.home.adapter
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -14,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.softwill.alpha.R
 import com.softwill.alpha.databinding.ItemHomePostBinding
 import com.softwill.alpha.home.model.HomePostModel
+import com.softwill.alpha.profile.tabActivity.PhotoModel
 import com.softwill.alpha.profile_guest.activity.ProfileGuestActivity
 import com.softwill.alpha.utils.UtilsFunctions
 
@@ -123,7 +123,7 @@ class HomePostAdapter(
                 binding.llShare.setOnClickListener {
                     binding.llShare.isEnabled=false
                     if(UtilsFunctions().singleClickListener()) return@setOnClickListener
-                    callbackInterface.onShareCallback(position,binding.llShare);
+                    callbackInterface.onShareCallback(position,photos,binding.llShare);
                 }
 
                 binding.llLikeUnlike.setOnClickListener {
@@ -153,7 +153,7 @@ class HomePostAdapter(
         fun postDetailsCallback(title: String, desc: String, llRead: LinearLayout)
         fun reportAbuseCallback(view: ImageView, id: Int)
         fun commentCallback(id: Int, position: Int, llComment: LinearLayout)
-        fun onShareCallback(position: Int, llShare: LinearLayout)
+        fun onShareCallback(position: Int, photos: List<PhotoModel>, llShare: LinearLayout)
         fun onDeleteCallback(position: Int, view : ImageView, postId : Int)
         fun onLikeUnlikeCallback(position: Int, id: Int, llLikeUnlike: LinearLayout)
     }

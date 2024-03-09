@@ -14,12 +14,14 @@ import com.softwill.alpha.chat.ChatActivity
 import com.softwill.alpha.chat.FirebaseUtil
 import com.softwill.alpha.chat.model.ChatUserModel
 import com.softwill.alpha.databinding.ItemShareBinding
+import com.softwill.alpha.profile.tabActivity.PhotoModel
 import com.softwill.alpha.profile_guest.adapter.ConnectionListModel
 import com.softwill.alpha.utils.UtilsFunctions
 
 
 class ShareAdapter(
     private var mList: ArrayList<ConnectionListModel>,
+    private val photos: ArrayList<PhotoModel>,
     private val context: Context,
 ) : RecyclerView.Adapter<ShareAdapter.ViewHolder>() {
 
@@ -53,6 +55,7 @@ class ShareAdapter(
 
                     val intent = Intent(context, ChatActivity::class.java)
                     intent.putExtra("mName", name)
+                    intent.putExtra("photos", photos)
                     AndroidUtil.passUserModelAsIntent(intent, chatUserModel)
                     context?.startActivity(intent)
                 }

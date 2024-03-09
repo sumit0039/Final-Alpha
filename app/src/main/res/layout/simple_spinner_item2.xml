@@ -3,7 +3,6 @@
     style="@style/spinnerItemStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:ellipsize="marquee"
     android:fontFamily="@font/prompt_regular"
     android:maxLines="1"
     android:paddingStart="12dp"

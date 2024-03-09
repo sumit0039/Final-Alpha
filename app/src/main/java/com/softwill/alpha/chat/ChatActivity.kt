@@ -33,6 +33,7 @@ import com.softwill.alpha.chat.model.ChatMessageModel
 import com.softwill.alpha.chat.model.ChatUserModel
 import com.softwill.alpha.chat.model.ChatroomModel
 import com.softwill.alpha.databinding.ActivityChatBinding
+import com.softwill.alpha.profile.tabActivity.PhotoModel
 import com.softwill.alpha.profile_guest.activity.ProfileGuestActivity
 import com.softwill.alpha.utils.Constant
 import com.softwill.alpha.utils.YourPreference
@@ -58,7 +59,7 @@ class ChatActivity : AppCompatActivity(), ChatRecyclerAdapter.ChatListCallbackIn
     val timestamp = DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").toFormatter()
     var attachment:String=""
     var launcher: ActivityResultLauncher<Intent>? = null
-
+    var photos: ArrayList<PhotoModel>? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +70,11 @@ class ChatActivity : AppCompatActivity(), ChatRecyclerAdapter.ChatListCallbackIn
 
         yourPreference = YourPreference(this)
 
+        photos = intent.getSerializableExtra("photos") as? ArrayList<PhotoModel>
+
+        if(photos!=null){
+            binding.chatMessageInput.setText(photos.toString())
+        }
         chatUserModel = AndroidUtil.getUserModelFromIntent(intent)
 
         chatroomId = chatUserModel!!.userId?.let {

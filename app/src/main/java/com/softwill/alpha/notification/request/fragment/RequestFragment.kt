@@ -103,8 +103,7 @@ class RequestFragment : Fragment(), RequestSubAdapter.CallbackInterface {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     val responseJson = response.body()?.string()
-                    val requests =
-                        Gson().fromJson(responseJson, Array<RequestMainModel>::class.java).toList()
+                    val requests = Gson().fromJson(responseJson, Array<RequestMainModel>::class.java).toList()
                     mRequestMainModel.clear()
 
                     mRequestMainModel.addAll(requests)
@@ -157,12 +156,12 @@ class RequestFragment : Fragment(), RequestSubAdapter.CallbackInterface {
                     val responseObject = JSONObject(responseJson)
 
 
-                    if (responseObject.has("message")) {
+                    if (responseObject.has("message").toString().isNotEmpty()) {
 
-                        if (responseObject.getString("message") == "Accepted successfully") {
+//                        if (responseObject.getString("message") == "Accepted successfully") {
                             apiConnectionRequests()
                             mRequestMainAdapter.removeItem(position)
-                        }
+//                        }
 
 //                        if(status == "accept"){
 //

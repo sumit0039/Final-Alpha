@@ -67,7 +67,7 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
 
         setOnClickListener()
         setupViewPager()
-
+        apiAcceptRejectConnectionRequest()
         apiGuestUserDetails();
     }
 
@@ -110,6 +110,11 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
 
 
         binding.card1.setOnClickListener {
+            if(UtilsFunctions().singleClickListener()) return@setOnClickListener
+            apiRemoveConnection()
+        }
+
+        binding.cardCancelConnect.setOnClickListener {
             if(UtilsFunctions().singleClickListener()) return@setOnClickListener
             apiRemoveConnection()
         }
@@ -440,18 +445,25 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                     val responseJson = response.body()?.string()
                     val responseObject = JSONObject(responseJson)
 
-                    if (responseObject.has("message")) {
+                    if (responseObject.has("message").toString().isNotEmpty()) {
 
-                        if (responseObject.getString("message") == "Request sent successfully") {
-                            binding.linearLayout2.isVisible = false
-                            binding.linearLayout.isVisible = true
-                            // binding.blur.setBlurRadius(0F)
+//                        if (responseObject.getString("message") == "Request sent successfully") {
+                            binding.linearLayout2.isVisible = true
+                            binding.linearLayout.isVisible = false
+                            binding.cardCancelConnect.visibility = View.VISIBLE
+                            binding.cardConnect.visibility = View.GONE
                             binding.llLock.visibility = View.GONE
-                            binding.viewPager.visibility = View.VISIBLE
-                        }
+                            binding.viewPager.visibility = View.GONE
+//                        }
                     }
 
                 } else {
+                    binding.linearLayout2.isVisible = true
+                    binding.linearLayout.isVisible = false
+                    binding.cardCancelConnect.visibility = View.VISIBLE
+                    binding.cardConnect.visibility = View.GONE
+                    binding.llLock.visibility = View.GONE
+                    binding.viewPager.visibility = View.GONE
                     UtilsFunctions().handleErrorResponse(response, this@ProfileGuestActivity)
                 }
             }
@@ -485,8 +497,9 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                         if (responseObject.getString("message") == "Cancelled successfully") {
                             binding.linearLayout2.isVisible = true
                             binding.linearLayout.isVisible = false
-                            // binding.blur.setBlurRadius(10F)
-                            binding.llLock.visibility = View.VISIBLE
+                            binding.cardCancelConnect.visibility = View.GONE
+                            binding.cardConnect.visibility = View.VISIBLE
+                            binding.llLock.visibility = View.GONE
                             binding.viewPager.visibility = View.GONE
                         }
                     }

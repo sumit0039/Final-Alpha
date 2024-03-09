@@ -32,6 +32,7 @@ import com.softwill.alpha.home.model.CommentModel
 import com.softwill.alpha.home.model.HomePostModel
 import com.softwill.alpha.networking.RetrofitClient
 import com.softwill.alpha.profile.tabActivity.ActivityPostAdapter
+import com.softwill.alpha.profile.tabActivity.PhotoModel
 import com.softwill.alpha.profile.tabActivity.PostModel
 import com.softwill.alpha.profile_guest.adapter.ConnectionListModel
 import com.softwill.alpha.profile_guest.model.GuestUserDetailsResponse
@@ -408,7 +409,8 @@ class PostVIewDetailActivity : AppCompatActivity(), ActivityPostAdapter.Callback
         })
 
 
-        mShareAdapter = ShareAdapter(mConnectionListModel, this@PostVIewDetailActivity)
+        mShareAdapter = ShareAdapter(mConnectionListModel,
+            postModel!!.photos as ArrayList<PhotoModel>, this@PostVIewDetailActivity)
         rvShare.adapter = mShareAdapter
         mShareAdapter!!.notifyDataSetChanged()
 

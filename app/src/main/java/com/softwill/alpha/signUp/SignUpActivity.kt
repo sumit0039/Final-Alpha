@@ -2,10 +2,14 @@ package com.softwill.alpha.signUp
 
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.Html
+import android.text.Spannable
+import android.text.SpannableString
 import android.text.TextWatcher
+import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
@@ -387,13 +391,29 @@ class SignUpActivity : AppCompatActivity() {
                             avtarUrl = "",
                             instituteId = -1,
                             name = "Select Institute",
-                            userName = "Select Institute"
+                            userName = ""
                         )
                         // Add item at the first position
                         mGetInstituteList.add(0, item1)
 
                         for (commonSpinner in mGetInstituteList) {
-                            retailerListName.add(commonSpinner.name)
+
+                        /*    val text = commonSpinner.name + "\n" + commonSpinner.userName
+                            val spannableString = SpannableString(text)
+
+                            // Find the position of newline character
+                            val newlineIndex = text.indexOf("\n")
+
+                            // Apply grey color to the text after newline character
+                            spannableString.setSpan(
+                                ForegroundColorSpan(Color.parseColor("#B70101")), // Use the hex color code for grey
+                                newlineIndex + 1, // Start index after the newline character
+                                text.length, // End index at the end of the string
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+
+                            retailerListName.add(spannableString.toString())*/
+                            retailerListName.add(commonSpinner.name+"\n"+(Html.fromHtml("<font color=\"#808080\">" + commonSpinner.userName + "</font>")))
                         }
                         setSpinnerInstitute(-1, -1,retailerListName)
                         resetSpinners()

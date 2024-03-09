@@ -47,6 +47,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallbackInterface,
@@ -296,8 +297,8 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
     }
 
 
-    override fun onShareCallback(position: Int, llShare: LinearLayout) {
-        openShareBottomSheet(llShare)
+    override fun onShareCallback(position: Int, photos: List<PhotoModel>, llShare: LinearLayout) {
+        openShareBottomSheet(photos,llShare)
         apiConnectionsList()
 
     }
@@ -338,7 +339,7 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
     }
 
 
-    private fun openShareBottomSheet(llShare: LinearLayout) {
+    private fun openShareBottomSheet(photos: List<PhotoModel>, llShare: LinearLayout) {
         val dialog = context?.let { BottomSheetDialog(it, R.style.AppBottomSheetDialogTheme) }
         val view = layoutInflater.inflate(R.layout.bottomsheet_share, null)
 
@@ -363,7 +364,8 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
         })
 
 
-        mShareAdapter = ShareAdapter(mConnectionListModel, requireActivity())
+        mShareAdapter = ShareAdapter(mConnectionListModel,
+            photos as ArrayList<PhotoModel>, requireActivity())
         rvShare.adapter = mShareAdapter
         mShareAdapter!!.notifyDataSetChanged()
 
@@ -510,7 +512,7 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    progressDialog?.dismiss()
+//                    progressDialog?.dismiss()
 
                     val responseJson = response.body()?.string()
                     val responseObject = JSONObject(responseJson)
@@ -605,9 +607,9 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
 
 
     private fun apiHomePosts() {
-        if (currentPage == 0){
+       /* if (currentPage == 0){
             progressDialog = UtilsFunctions().showCustomProgressDialog(requireActivity())
-        }
+        }*/
         val call: Call<ResponseBody> = RetrofitClient.getInstance(requireActivity()).myApi.api_HomePosts(currentPage, 5)
 
         call.enqueue(object : Callback<ResponseBody> {
@@ -631,10 +633,10 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
                     binding.swiperefresh.visibility=View.VISIBLE
                     binding.noResultFound.visibility=View.GONE
 
-                    progressDialog?.dismiss()
+//                    progressDialog?.dismiss()
 
                 } else {
-                    progressDialog?.dismiss()
+//                    progressDialog?.dismiss()
                     binding.swiperefresh.visibility=View.GONE
                     binding.noResultFound.visibility=View.VISIBLE
 //                    UtilsFunctions().handleErrorResponse(response, requireActivity())
@@ -645,7 +647,7 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
                 t.printStackTrace()
                 binding.swiperefresh.visibility=View.GONE
                 binding.noResultFound.visibility=View.VISIBLE
-                progressDialog?.dismiss()
+//                progressDialog?.dismiss()
             }
         })
     }
@@ -923,7 +925,7 @@ class HomeFragment : Fragment(), CallbackInterface, CommentAdapter.CommentCallba
 
         llShare.setOnClickListener {
             if(UtilsFunctions().singleClickListener()) return@setOnClickListener
-            openShareBottomSheet(llShare)
+            openShareBottomSheet(photosList, llShare)
             apiConnectionsList()
         }
 

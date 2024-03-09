@@ -44,7 +44,7 @@ class RequestSubAdapter(
                         .placeholder(R.drawable.icon_no_image).into(binding.ivImage)
                 }
 
-
+/*
                 binding.ivImage.setOnClickListener {
                     val intent = Intent(context, ProfileGuestActivity::class.java)
                     intent.putExtra("mVisitor", true)
@@ -57,7 +57,7 @@ class RequestSubAdapter(
                     intent.putExtra("mVisitor", true)
                     intent.putExtra("mUserId", mList[position].senderUserId)
                     context.startActivity(intent)
-                }
+                }*/
 
                 binding.cardAccept.setOnClickListener {
                     callbackInterface.connectionAcceptRejectCallback(id, "accept" , position,mList[position])
@@ -69,6 +69,7 @@ class RequestSubAdapter(
 
 
             }
+
         }
 
 
