@@ -15,6 +15,7 @@ import android.widget.*
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
@@ -109,22 +110,47 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         binding.rlExit.setOnClickListener(this)
 
         // Set up a click listener for the SwitchCompat
-        binding.deleteCurrentUser.setOnCheckedChangeListener { _, isChecked ->
-            // Handle the click event here
-            if (isChecked) {
-                // The switch is checked (ON)
-                // Perform actions when the switch is turned on
-                // For example, enable some feature or start a service
-                apiDeleteCurrentUser()
-                binding.deleteCurrentUser.isClickable=true
-            } else {
-                // The switch is unchecked (OFF)
-                // Perform actions when the switch is turned off
-                // For example, disable some feature or stop a service
-                binding.deleteCurrentUser.isClickable=false
-            }
+        binding.deleteCurrentUser.setOnClickListener {
+
+            deleteCommentBottomSheet()
+
         }
 
+    }
+
+    private fun deleteCommentBottomSheet() {
+        val dialog =  BottomSheetDialog(this, R.style.AppBottomSheetDialogTheme)
+        val view = layoutInflater.inflate(R.layout.bottomsheet_delete_post, null)
+
+
+        val btnNo = view.findViewById<Button>(R.id.btnNo)
+        val tvText = view.findViewById<TextView>(R.id.tvText)
+        val btnYes = view.findViewById<Button>(R.id.btnYes)
+        btnYes.setBackgroundResource(R.drawable.btn_absent_bg)
+        btnYes.setTextColor(
+            ContextCompat.getColor(
+                this,
+                R.color.white
+            )
+        )
+        tvText.text = "After clicking yes, your account and institutional activity will be permanently deleted?"
+
+        btnYes.setOnClickListener {
+            if(UtilsFunctions().singleClickListener()) return@setOnClickListener
+            dialog?.dismiss()
+            apiDeleteCurrentUser()
+        }
+
+        btnNo.setOnClickListener {
+            if(UtilsFunctions().singleClickListener()) return@setOnClickListener
+            dialog?.dismiss()
+        }
+
+
+        dialog?.setCanceledOnTouchOutside(true)
+        dialog?.setCancelable(true)
+        dialog?.setContentView(view)
+        dialog?.show()
     }
 
     private fun setupBack() {
@@ -367,7 +393,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         spinnerFaculty.adapter = adapter
 
-        if(yourPreference?.getData(Constant.instituteStreamClassId)!=null && yourPreference?.getData(Constant.instituteStreamClassId)?.toInt()!=-1) {
+        if(yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
             etFaculty.setText(yourPreference?.getData(Constant.facultyName))
             spinnerFaculty.setSelection(mFacilitiesList.indexOf(yourPreference?.getData(Constant.facultyName)))
         }else{
@@ -403,7 +429,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mStreamsList)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         spinnerStream.adapter = adapter
-        if(yourPreference?.getData(Constant.instituteStreamId)!=null && yourPreference?.getData(Constant.instituteStreamId)!!.toInt()!=-1){
+        if(yourPreference?.getData(Constant.instituteStreamId)!!.toInt()!=-1){
 
             etStream.setText(yourPreference?.getData(Constant.streamName))
             spinnerStream.setSelection(mStreamsList.indexOf(yourPreference?.getData(Constant.instituteStreamId)))
@@ -456,13 +482,8 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, retailerListName)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         etInstituteListUsername.adapter = adapter
-        if(yourPreference?.getData(Constant.instituteName)!=null) {
-//            etInstituteListUsername.setTitle((yourPreference?.getData(Constant.instituteName).toString()))
-            etInstituteUsername.setText((yourPreference?.getData(Constant.instituteName).toString()))
-        }else {
-            etInstituteListUsername.setTitle("Select Institute")
-            etInstituteListUsername.setPositiveButton("OK")
-        }
+        etInstituteListUsername.setTitle("Select Institute")
+        etInstituteListUsername.setPositiveButton("OK")
     }
 
     private fun api_checkInstituteName(name: String) {
@@ -519,7 +540,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mClassList)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         spinnerClass.adapter = adapter
-        if(yourPreference?.getData(Constant.instituteStreamClassId)!=null && yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
+        if(yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
             etClass.setText(yourPreference?.getData(Constant.className))
             spinnerClass.setSelection(mClassList.indexOf(yourPreference?.getData(Constant.className)))
         }else{

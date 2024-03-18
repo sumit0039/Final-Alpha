@@ -29,6 +29,7 @@ import com.softwill.alpha.institute.timetable.activity.TimeTableActivity
 import com.softwill.alpha.institute.transport.activity.TransportActivity
 import com.softwill.alpha.institute_detail.CollegeDetailsActivity
 import com.softwill.alpha.utils.Constant
+import com.softwill.alpha.utils.DialogUtils
 import com.softwill.alpha.utils.YourPreference
 
 
@@ -54,7 +55,13 @@ class InstituteFragment : Fragment() {
 
         IsStudentLogin = yourPreference?.getData(Constant.IsStudentLogin).toBoolean()
 
-
+        if(yourPreference?.getData(Constant.approvedByInstite).toString().isNotEmpty()) {
+            binding.insitituteCategory.visibility=View.VISIBLE
+            binding.noInstitute.visibility=View.GONE
+        }else{
+            binding.insitituteCategory.visibility=View.GONE
+            binding.noInstitute.visibility=View.VISIBLE
+        }
 
         onClickListener()
 
@@ -160,8 +167,6 @@ class InstituteFragment : Fragment() {
             activity?.startActivity(intent)
         }
 
-
     }
-
 
 }

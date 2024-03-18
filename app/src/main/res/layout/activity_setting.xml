@@ -318,16 +318,14 @@
                     android:textSize="18sp" />
 
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <ImageView
                     android:id="@+id/deleteCurrentUser"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:checked="false"
-                    android:thumb="@drawable/custom_thumb"
-                    app:switchMinWidth="25dp"
-                    app:track="@drawable/custom_track" />
+                    android:src="@drawable/icon_delete"
+                    />
 
 
             </RelativeLayout>

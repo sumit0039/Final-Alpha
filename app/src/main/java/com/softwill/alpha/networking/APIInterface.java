@@ -141,6 +141,9 @@ public interface APIInterface {
     @POST("api/current_user/send_connection_request")
     Call<ResponseBody> api_SendConnectionRequest(@Body JsonObject jsonObject);
 
+    @POST("api/user/check_connection_request_status")
+    Call<ResponseBody> api_CheckConnectionRequestStatus(@Body JsonObject jsonObject);
+
     @POST("api/current_user/cancel_or_remove_connection_request")
     Call<ResponseBody> api_RemoveConnection(@Body JsonObject jsonObject);
 

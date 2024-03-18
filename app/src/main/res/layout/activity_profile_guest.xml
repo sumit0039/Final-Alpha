@@ -333,6 +333,7 @@
                     app:tabIndicatorColor="@color/transparent"
                     app:tabInlineLabel="true"
                     app:tabIndicator="@color/blue"
+                    app:tabIconTint="@color/gray_color"
                     app:tabSelectedTextColor="@color/blue"
                     app:tabTextColor="@color/gray_color">
 

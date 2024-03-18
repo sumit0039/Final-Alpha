@@ -28,7 +28,9 @@ import com.softwill.alpha.chat.model.ChatUserModel
 import com.softwill.alpha.dashboard.DashboardActivity
 import com.softwill.alpha.databinding.ActivityProfileGuestBinding
 import com.softwill.alpha.networking.RetrofitClient
+import com.softwill.alpha.profile.setting.ClassesListModel
 import com.softwill.alpha.profile_guest.adapter.ProfileGuestTabAdapter
+import com.softwill.alpha.profile_guest.model.ConnectionStatusResponse
 import com.softwill.alpha.profile_guest.model.GuestUserDetailsResponse
 import com.softwill.alpha.utils.UtilsFunctions
 import com.softwill.alpha.utils.YourPreference
@@ -51,6 +53,7 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
     private var mProfileImage: String = ""
     private var isFriend: Boolean = false
     lateinit var radioButton: RadioButton
+    var mConnectionStatusResponse:ConnectionStatusResponse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,9 +70,11 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
 
         setOnClickListener()
         setupViewPager()
-        apiAcceptRejectConnectionRequest()
+        apiCheckConnectionRequestStatus()
         apiGuestUserDetails();
     }
+
+
 
     private fun setupViewPager() {
         val adapter = ProfileGuestTabAdapter(this, supportFragmentManager, 2, mUserId)
@@ -363,6 +368,84 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun apiCheckConnectionRequestStatus() {
+
+        val jsonObject = JsonObject().apply {
+            addProperty("userId", mUserId)
+        }
+        val call: Call<ResponseBody> =
+            RetrofitClient.getInstance(this@ProfileGuestActivity).myApi.api_CheckConnectionRequestStatus(jsonObject)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            @SuppressLint("SetTextI18n")
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+
+                        val responseJson = response.body()?.string()
+                    val responseObject = Gson().fromJson(responseJson, ConnectionStatusResponse::class.java)
+                        mConnectionStatusResponse = responseObject
+//                        Toast.makeText(this@ProfileGuestActivity,mConnectionStatusResponse?.statusString.toString(), Toast.LENGTH_LONG).show()
+                        if (mConnectionStatusResponse?.statusString.toString().isNotEmpty()) {
+                           /* if(mConnectionStatusResponse?.statusString.toString().equals("accepted")){
+                                binding.linearLayout.visibility=View.VISIBLE
+                                binding.cardConnect.visibility=View.GONE
+                                binding.linearLayout2.visibility=View.GONE
+                            }*/
+                        when(mConnectionStatusResponse?.statusString.toString()){
+                            "acceptOrReject"->{
+                                binding.cardConnect.visibility=View.VISIBLE
+                                binding.linearLayout.visibility=View.GONE
+                                binding.cardCancelConnect.visibility=View.GONE
+                                binding.llLock.visibility = View.VISIBLE
+                                binding.viewPager.visibility = View.GONE
+                            }
+                            "accepted"->{
+                                binding.linearLayout.visibility=View.VISIBLE
+                                binding.cardConnect.visibility=View.GONE
+                                binding.cardCancelConnect.visibility=View.GONE
+                                binding.llLock.visibility = View.GONE
+                                binding.viewPager.visibility = View.VISIBLE
+                            }
+                            "pending"->{
+                                binding.cardCancelConnect.visibility=View.VISIBLE
+                                binding.linearLayout.visibility=View.GONE
+                                binding.cardConnect.visibility=View.GONE
+                                binding.llLock.visibility = View.VISIBLE
+                                binding.viewPager.visibility = View.GONE
+                            }
+                            "rejected"->{
+                                binding.cardConnect.visibility=View.GONE
+                                binding.linearLayout.visibility=View.GONE
+                                binding.cardCancelConnect.visibility=View.GONE
+                                binding.llLock.visibility = View.VISIBLE
+                                binding.viewPager.visibility = View.GONE
+                            }
+                        }
+                        }else{
+                            binding.cardConnect.visibility=View.VISIBLE
+                            binding.linearLayout.visibility=View.GONE
+                            binding.cardCancelConnect.visibility=View.GONE
+                            binding.llLock.visibility = View.VISIBLE
+                            binding.viewPager.visibility = View.GONE
+                        }
+
+
+                } else {
+                    try {
+                        UtilsFunctions().handleErrorResponse(response, this@ProfileGuestActivity)
+                    }catch (e:Exception){
+                        Log.e(TAG, "onResponse: ${e.toString()}", )
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+
+    }
+
     private fun apiGuestUserDetails() {
 
         val call: Call<ResponseBody> =
@@ -389,7 +472,7 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
 
                     chatUserModel = ChatUserModel("",false, mName,FirebaseUtil.timestampToString(Timestamp.now()),responseObject.id.toString(),mProfileImage,"")
 //                    Toast.makeText(this@ProfileGuestActivity,"Mobile Number :"+responseObject.mobile+"Name : "+mName+" "+"Time :"+FirebaseUtil.timestampToString(Timestamp.now())+"UserID : "+responseObject.id.toString(),Toast.LENGTH_LONG).show()
-                    if (responseObject.friends) {
+                   /* if (responseObject.friends) {
                         isFriend = true;
                         binding.ivBlueTick.isVisible = false
                         binding.linearLayout2.isVisible = false
@@ -403,7 +486,7 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                         binding.linearLayout.isVisible = false
                         binding.llLock.visibility = View.VISIBLE
                         binding.viewPager.visibility = View.GONE
-                    }
+                    }*/
 
                     if (responseObject.connections > 1) {
                         binding.tvConnection.text = getString(R.string.title_Connections)
@@ -425,6 +508,7 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                 t.printStackTrace()
             }
         })
+
     }
 
     private fun apiAcceptRejectConnectionRequest() {

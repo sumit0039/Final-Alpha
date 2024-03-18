@@ -113,7 +113,7 @@ class RequestFragment : Fragment(), RequestSubAdapter.CallbackInterface {
                     for (i in requests){
                         count=+i.requests.size
                     }
-                    mListener?.requestsCount(count)
+                    mListener?.requestsCount(count.plus(requests.size).minus(count))
 
 
                     if (mRequestMainModel.isNotEmpty()) {
