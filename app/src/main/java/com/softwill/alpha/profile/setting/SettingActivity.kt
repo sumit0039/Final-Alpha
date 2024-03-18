@@ -367,7 +367,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         spinnerFaculty.adapter = adapter
 
-        if(yourPreference?.getData(Constant.instituteStreamClassId)!=null && yourPreference?.getData(Constant.instituteStreamClassId)?.toInt()!=-1) {
+        if(yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
             etFaculty.setText(yourPreference?.getData(Constant.facultyName))
             spinnerFaculty.setSelection(mFacilitiesList.indexOf(yourPreference?.getData(Constant.facultyName)))
         }else{
@@ -403,7 +403,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mStreamsList)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         spinnerStream.adapter = adapter
-        if(yourPreference?.getData(Constant.instituteStreamId)!=null && yourPreference?.getData(Constant.instituteStreamId)!!.toInt()!=-1){
+        if(yourPreference?.getData(Constant.instituteStreamId)!!.toInt()!=-1){
 
             etStream.setText(yourPreference?.getData(Constant.streamName))
             spinnerStream.setSelection(mStreamsList.indexOf(yourPreference?.getData(Constant.instituteStreamId)))
@@ -456,13 +456,8 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, retailerListName)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         etInstituteListUsername.adapter = adapter
-        if(yourPreference?.getData(Constant.instituteName)!=null) {
-//            etInstituteListUsername.setTitle((yourPreference?.getData(Constant.instituteName).toString()))
-            etInstituteUsername.setText((yourPreference?.getData(Constant.instituteName).toString()))
-        }else {
-            etInstituteListUsername.setTitle("Select Institute")
-            etInstituteListUsername.setPositiveButton("OK")
-        }
+        etInstituteListUsername.setTitle("Select Institute")
+        etInstituteListUsername.setPositiveButton("OK")
     }
 
     private fun api_checkInstituteName(name: String) {
@@ -519,7 +514,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mClassList)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         spinnerClass.adapter = adapter
-        if(yourPreference?.getData(Constant.instituteStreamClassId)!=null && yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
+        if(yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
             etClass.setText(yourPreference?.getData(Constant.className))
             spinnerClass.setSelection(mClassList.indexOf(yourPreference?.getData(Constant.className)))
         }else{
@@ -811,9 +806,9 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
 
                     if (responseObject.has("message")) {
 
-                        if (type == "userName") {
+//                        if (type == "userName") {
                         YourPreference.saveData(Constant.userName, value)
-                        } else if (type == "facultyId") {
+//                        } else if (type == "facultyId") {
                         YourPreference.saveData(Constant.instituteUsername, mInstituteId)
                         YourPreference.saveData(
                             Constant.instituteName,
@@ -836,7 +831,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                             Constant.className,
                             etClass.text.toString().trim()
                         )
-                        }
+//                        }
 
                         UtilsFunctions().showToast(
                             this@SettingActivity,

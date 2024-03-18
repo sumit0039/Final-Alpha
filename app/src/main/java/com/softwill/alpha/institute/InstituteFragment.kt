@@ -29,6 +29,7 @@ import com.softwill.alpha.institute.timetable.activity.TimeTableActivity
 import com.softwill.alpha.institute.transport.activity.TransportActivity
 import com.softwill.alpha.institute_detail.CollegeDetailsActivity
 import com.softwill.alpha.utils.Constant
+import com.softwill.alpha.utils.DialogUtils
 import com.softwill.alpha.utils.YourPreference
 
 
@@ -155,9 +156,13 @@ class InstituteFragment : Fragment() {
 
 
         binding.llMyInstitute.setOnClickListener {
-            val intent = Intent(activity, CollegeDetailsActivity::class.java)
-            intent.putExtra("mMyInstitute", true)
-            activity?.startActivity(intent)
+            if(yourPreference?.getData(Constant.approvedByInstite).toString().isNotEmpty()) {
+                val intent = Intent(activity, CollegeDetailsActivity::class.java)
+                intent.putExtra("mMyInstitute", true)
+                activity?.startActivity(intent)
+            }else{
+                DialogUtils.showAlert(requireContext(), "Alert", "Institute verification is pending from portal.")
+            }
         }
 
 

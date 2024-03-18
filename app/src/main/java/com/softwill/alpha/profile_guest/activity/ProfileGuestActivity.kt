@@ -67,9 +67,11 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
 
         setOnClickListener()
         setupViewPager()
-        apiAcceptRejectConnectionRequest()
+        apiCheckConnectionRequestStatus()
         apiGuestUserDetails();
     }
+
+
 
     private fun setupViewPager() {
         val adapter = ProfileGuestTabAdapter(this, supportFragmentManager, 2, mUserId)
@@ -363,6 +365,73 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun apiCheckConnectionRequestStatus() {
+
+        val jsonObject = JsonObject().apply {
+            addProperty("userId", mUserId)
+        }
+        val call: Call<ResponseBody> =
+            RetrofitClient.getInstance(this@ProfileGuestActivity).myApi.api_CheckConnectionRequestStatus(jsonObject)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            @SuppressLint("SetTextI18n")
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+
+                        val responseJson = response.body()?.string()
+                        val responseObject = JSONObject(responseJson)
+
+                        if (responseObject.has("statusString").toString().isNotEmpty()) {
+                        when(responseObject.has("statusString").toString()){
+                            "acceptOrReject"->{
+                                binding.cardConnect.visibility=View.VISIBLE
+                                binding.linearLayout.visibility=View.GONE
+                                binding.cardCancelConnect.visibility=View.GONE
+                                binding.cardConnect.visibility=View.GONE
+                            }
+                            "accepted"->{
+                                binding.linearLayout.visibility=View.VISIBLE
+                                binding.cardConnect.visibility=View.GONE
+                                binding.cardCancelConnect.visibility=View.GONE
+                                binding.cardConnect.visibility=View.GONE
+                            }
+                            "pending"->{
+                                binding.cardCancelConnect.visibility=View.VISIBLE
+                                binding.linearLayout.visibility=View.GONE
+                                binding.cardConnect.visibility=View.GONE
+                                binding.cardConnect.visibility=View.GONE
+                            }
+                            "rejected"->{
+                                binding.cardConnect.visibility=View.GONE
+                                binding.linearLayout.visibility=View.GONE
+                                binding.cardCancelConnect.visibility=View.GONE
+                                binding.cardConnect.visibility=View.VISIBLE
+                            }
+                        }
+                        }else{
+                            binding.cardConnect.visibility=View.VISIBLE
+                            binding.linearLayout.visibility=View.GONE
+                            binding.cardCancelConnect.visibility=View.GONE
+                            binding.cardConnect.visibility=View.GONE
+                        }
+
+
+                } else {
+                    try {
+                        UtilsFunctions().handleErrorResponse(response, this@ProfileGuestActivity)
+                    }catch (e:Exception){
+                        Log.e(TAG, "onResponse: ${e.toString()}", )
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+
+    }
+
     private fun apiGuestUserDetails() {
 
         val call: Call<ResponseBody> =
@@ -425,6 +494,7 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                 t.printStackTrace()
             }
         })
+
     }
 
     private fun apiAcceptRejectConnectionRequest() {

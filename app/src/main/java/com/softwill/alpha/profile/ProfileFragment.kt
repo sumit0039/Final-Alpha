@@ -281,8 +281,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
     private fun apiCurrentUserDetails() {
         progressDialog = UtilsFunctions().showCustomProgressDialog(requireContext())
 
-        val call: Call<ResponseBody> =
-            RetrofitClient.getInstance(requireActivity()).myApi.api_CurrentUserDetails()
+        val call: Call<ResponseBody> = RetrofitClient.getInstance(requireActivity()).myApi.api_CurrentUserDetails()
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
