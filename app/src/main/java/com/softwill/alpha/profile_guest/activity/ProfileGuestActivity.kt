@@ -28,6 +28,7 @@ import com.softwill.alpha.chat.model.ChatUserModel
 import com.softwill.alpha.dashboard.DashboardActivity
 import com.softwill.alpha.databinding.ActivityProfileGuestBinding
 import com.softwill.alpha.networking.RetrofitClient
+import com.softwill.alpha.notification.request.model.RequestModel
 import com.softwill.alpha.profile.setting.ClassesListModel
 import com.softwill.alpha.profile_guest.adapter.ProfileGuestTabAdapter
 import com.softwill.alpha.profile_guest.model.ConnectionStatusResponse
@@ -67,6 +68,8 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
         setupBack()
 
         binding.llConnections.setOnClickListener(this)
+        binding.acceptCv.setOnClickListener(this)
+        binding.rejectCv.setOnClickListener(this)
 
         setOnClickListener()
         setupViewPager()
@@ -365,6 +368,14 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
 
+            R.id.accept_cv->{
+                apiAcceptRejectConnectionRequest("accept")
+            }
+
+            R.id.reject_cv->{
+                apiAcceptRejectConnectionRequest("reject")
+            }
+
         }
     }
 
@@ -392,8 +403,9 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                                 binding.linearLayout2.visibility=View.GONE
                             }*/
                         when(mConnectionStatusResponse?.statusString.toString()){
-                            "acceptOrReject"->{
-                                binding.cardConnect.visibility=View.VISIBLE
+                            "acceptOrRejact"->{
+                                binding.acceptReject.visibility=View.VISIBLE
+                                binding.cardConnect.visibility=View.GONE
                                 binding.linearLayout.visibility=View.GONE
                                 binding.cardCancelConnect.visibility=View.GONE
                                 binding.llLock.visibility = View.VISIBLE
@@ -404,19 +416,22 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                                 binding.cardConnect.visibility=View.GONE
                                 binding.cardCancelConnect.visibility=View.GONE
                                 binding.llLock.visibility = View.GONE
+                                binding.acceptReject.visibility = View.GONE
                                 binding.viewPager.visibility = View.VISIBLE
                             }
                             "pending"->{
                                 binding.cardCancelConnect.visibility=View.VISIBLE
                                 binding.linearLayout.visibility=View.GONE
                                 binding.cardConnect.visibility=View.GONE
+                                binding.acceptReject.visibility = View.GONE
                                 binding.llLock.visibility = View.VISIBLE
                                 binding.viewPager.visibility = View.GONE
                             }
-                            "rejected"->{
-                                binding.cardConnect.visibility=View.GONE
+                            "rejacted"->{
+                                binding.cardConnect.visibility=View.VISIBLE
                                 binding.linearLayout.visibility=View.GONE
                                 binding.cardCancelConnect.visibility=View.GONE
+                                binding.acceptReject.visibility = View.GONE
                                 binding.llLock.visibility = View.VISIBLE
                                 binding.viewPager.visibility = View.GONE
                             }
@@ -425,6 +440,7 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                             binding.cardConnect.visibility=View.VISIBLE
                             binding.linearLayout.visibility=View.GONE
                             binding.cardCancelConnect.visibility=View.GONE
+                            binding.acceptReject.visibility = View.GONE
                             binding.llLock.visibility = View.VISIBLE
                             binding.viewPager.visibility = View.GONE
                         }
@@ -536,7 +552,8 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                             binding.linearLayout.isVisible = false
                             binding.cardCancelConnect.visibility = View.VISIBLE
                             binding.cardConnect.visibility = View.GONE
-                            binding.llLock.visibility = View.GONE
+                        binding.acceptReject.visibility = View.GONE
+                            binding.llLock.visibility = View.VISIBLE
                             binding.viewPager.visibility = View.GONE
 //                        }
                     }
@@ -546,7 +563,8 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                     binding.linearLayout.isVisible = false
                     binding.cardCancelConnect.visibility = View.VISIBLE
                     binding.cardConnect.visibility = View.GONE
-                    binding.llLock.visibility = View.GONE
+                    binding.acceptReject.visibility = View.GONE
+                    binding.llLock.visibility = View.VISIBLE
                     binding.viewPager.visibility = View.GONE
                     UtilsFunctions().handleErrorResponse(response, this@ProfileGuestActivity)
                 }
@@ -582,8 +600,9 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
                             binding.linearLayout2.isVisible = true
                             binding.linearLayout.isVisible = false
                             binding.cardCancelConnect.visibility = View.GONE
+                            binding.acceptReject.visibility = View.GONE
                             binding.cardConnect.visibility = View.VISIBLE
-                            binding.llLock.visibility = View.GONE
+                            binding.llLock.visibility = View.VISIBLE
                             binding.viewPager.visibility = View.GONE
                         }
                     }
@@ -598,5 +617,58 @@ class ProfileGuestActivity : AppCompatActivity(), View.OnClickListener {
             }
         })
     }
+
+
+    public fun apiAcceptRejectConnectionRequest(status: String) {
+
+        val jsonObject = JsonObject().apply {
+            addProperty("status", status)
+        }
+
+        val call: Call<ResponseBody> =
+            RetrofitClient.getInstance(this).myApi.api_AcceptRejectConnectionRequest(
+                mUserId,
+                jsonObject
+            )
+
+
+        call.enqueue(object : Callback<ResponseBody> {
+            @SuppressLint("NotifyDataSetChanged", "SuspiciousIndentation")
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val responseJson = response.body()?.string()
+                    val responseObject = JSONObject(responseJson)
+
+
+                    if (responseObject.has("message").toString().isNotEmpty()) {
+
+                        if (responseObject.getString("message") == "Accepted successfully") {
+                            binding.linearLayout.visibility=View.VISIBLE
+                            binding.cardConnect.visibility=View.GONE
+                            binding.cardCancelConnect.visibility=View.GONE
+                            binding.llLock.visibility = View.GONE
+                            binding.acceptReject.visibility = View.GONE
+                            binding.viewPager.visibility = View.VISIBLE
+                        }else{
+                            binding.acceptReject.visibility = View.GONE
+                            binding.cardConnect.visibility=View.VISIBLE
+                            binding.linearLayout.visibility=View.GONE
+                            binding.cardCancelConnect.visibility=View.GONE
+                            binding.llLock.visibility = View.VISIBLE
+                            binding.viewPager.visibility = View.GONE
+                        }
+                    }
+
+                } else {
+                    UtilsFunctions().handleErrorResponse(response, this@ProfileGuestActivity)
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
 
 }

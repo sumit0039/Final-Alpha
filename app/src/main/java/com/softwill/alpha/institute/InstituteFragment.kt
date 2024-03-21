@@ -55,7 +55,7 @@ class InstituteFragment : Fragment() {
 
         IsStudentLogin = yourPreference?.getData(Constant.IsStudentLogin).toBoolean()
 
-        if(yourPreference?.getData(Constant.approvedByInstite).toString().isNotEmpty()) {
+        if(yourPreference?.getData(Constant.approvedByInstite).toString().isNotEmpty() && !yourPreference?.getData(Constant.approvedByInstite).toString().contentEquals("false")) {
             binding.insitituteCategory.visibility=View.VISIBLE
             binding.noInstitute.visibility=View.GONE
         }else{
