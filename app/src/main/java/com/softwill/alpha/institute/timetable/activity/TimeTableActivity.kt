@@ -146,10 +146,12 @@ class TimeTableActivity : AppCompatActivity(),
         val etDesc = view.findViewById<EditText>(R.id.etDesc)
         rvLectureSubject = view.findViewById(R.id.rvLectureSubject)
 
-        setSubjectAdapter(
-            mSelectedClassPos,
-            mLectureClassModel[mSelectedClassPos].class_subjects[0].subjectId
-        )
+        if(mLectureClassModel.isNotEmpty()) {
+            setSubjectAdapter(
+                mSelectedClassPos,
+                mLectureClassModel[mSelectedClassPos].class_subjects[0].subjectId
+            )
+        }
 
 
 
@@ -498,7 +500,7 @@ class TimeTableActivity : AppCompatActivity(),
                         mLectureClassModel.addAll(mList)
 
 
-                        if (mLectureClassModel[0].class_subjects.isNotEmpty()) {
+                        if (mLectureClassModel.isNotEmpty() && mLectureClassModel[0].class_subjects.isNotEmpty()) {
                             mClassId = mLectureClassModel[0].classId
                             mLectureClassAdapter?.notifyDataSetChanged()
                             mSelectedClassPos = 0

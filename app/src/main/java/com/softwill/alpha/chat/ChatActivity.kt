@@ -243,7 +243,7 @@ class ChatActivity : AppCompatActivity(), ChatRecyclerAdapter.ChatListCallbackIn
         chatroomModel!!.sender = senderMap
         chatroomModel!!.timestamp = FirebaseUtil.timestampToString(Timestamp.now())
         chatroomModel!!.attachment = attachment
-        chatroomModel!!.setIsRead(true)
+        chatroomModel!!.setIsRead(false)
 
         FirebaseUtil.getChatroomReference(chatroomId).set(chatroomModel!!)
         val chatMessageModel = ChatMessageModel(chatUserModel!!.avtarUrl,fileName, FirebaseUtil.timestampToString(Timestamp.now()),chatroomModel!!.isRead,message, yourPreference!!.getData(Constant.userName),yourPreference!!.getData(Constant.userId), FirebaseUtil.timestampToString(Timestamp.now()), chatroomModel!!.attachment)
@@ -260,39 +260,41 @@ class ChatActivity : AppCompatActivity(), ChatRecyclerAdapter.ChatListCallbackIn
     private val orCreateChatroomModel: Unit
         @RequiresApi(Build.VERSION_CODES.O)
         get() {
-            FirebaseUtil.getChatroomReference(chatroomId).get()
-                .addOnCompleteListener { task: Task<DocumentSnapshot> ->
-                    if (task.isSuccessful) {
-                        chatroomModel = task.result.toObject(ChatroomModel::class.java)
-                        if (chatroomModel == null) {
+            if(binding.messageSendBtn.toString().isNotEmpty()){
+                FirebaseUtil.getChatroomReference(chatroomId).get()
+                    .addOnCompleteListener { task: Task<DocumentSnapshot> ->
+                        if (task.isSuccessful) {
+                            chatroomModel = task.result.toObject(ChatroomModel::class.java)
+                            if (chatroomModel == null) {
 
-                            val receiverMap: HashMap<String, String> = hashMapOf()
-                            receiverMap["avtarUrl"] = chatUserModel!!.avtarUrl.toString()
-                            receiverMap["name"] = chatUserModel!!.username.toString()
-                            receiverMap["userId"] = chatUserModel!!.userId.toString()
+                                val receiverMap: HashMap<String, String> = hashMapOf()
+                                receiverMap["avtarUrl"] = chatUserModel!!.avtarUrl.toString()
+                                receiverMap["name"] = chatUserModel!!.username.toString()
+                                receiverMap["userId"] = chatUserModel!!.userId.toString()
 
-                            val senderMap: HashMap<String, String> = hashMapOf()
-                            senderMap["avtarUrl"] = yourPreference!!.getData(Constant.avtarUrl)
-                            senderMap["name"] = yourPreference!!.getData(Constant.firstName)+" "+yourPreference!!.getData(Constant.lastName)
-                            senderMap["userId"] = yourPreference!!.getData(Constant.userId)
+                                val senderMap: HashMap<String, String> = hashMapOf()
+                                senderMap["avtarUrl"] = yourPreference!!.getData(Constant.avtarUrl)
+                                senderMap["name"] = yourPreference!!.getData(Constant.firstName)+" "+yourPreference!!.getData(Constant.lastName)
+                                senderMap["userId"] = yourPreference!!.getData(Constant.userId)
 
-                            //first time chat
-                            chatroomModel = ChatroomModel(
-                                "","",
-                                listOf(yourPreference!!.getData(Constant.userId), chatUserModel!!.userId),
-                                receiverMap,
-                                senderMap,
-                                FirebaseUtil.timestampToString(Timestamp.now()),
-                                ""
-                            )
+                                //first time chat
+                                chatroomModel = ChatroomModel(
+                                    "","",
+                                    listOf(yourPreference!!.getData(Constant.userId), chatUserModel!!.userId),
+                                    receiverMap,
+                                    senderMap,
+                                    FirebaseUtil.timestampToString(Timestamp.now()),
+                                    ""
+                                )
 
-                            FirebaseUtil.getChatroomReference(chatroomId).set(chatroomModel!!)
+                                FirebaseUtil.getChatroomReference(chatroomId).set(chatroomModel!!)
 //                            FirebaseUtil.getChatroomReference(chatroomId)
 //                            FirebaseUtil.getChatroomReference(chatroomId).delete()
 
+                            }
                         }
                     }
-                }
+            }
         }
 
 

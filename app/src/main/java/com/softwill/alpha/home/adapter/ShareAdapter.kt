@@ -51,7 +51,7 @@ class ShareAdapter(
                 binding.btnShare.setOnClickListener {
                     if(UtilsFunctions().singleClickListener()) return@setOnClickListener
                     val chatUserModel = ChatUserModel("",false, name,
-                        FirebaseUtil.timestampToString(Timestamp.now()),id.toString(),avtarUrl,"")
+                        FirebaseUtil.timestampToString(Timestamp.now()),userId.toString(),avtarUrl,"")
 
                     val intent = Intent(context, ChatActivity::class.java)
                     intent.putExtra("mName", name)

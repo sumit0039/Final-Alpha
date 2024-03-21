@@ -204,11 +204,13 @@ class EditProfileActivity : AppCompatActivity(), AchievementsAdapter.Achievement
             var firstName = binding.etFirstName.text.toString().trim()
             var lastName = binding.etLastName.text.toString().trim()
             var email = binding.etEmailAddress.text.toString().trim()
-            val items1: List<String> = binding.etDateOfBirth.text.toString().trim().split("-")
-            val date1 = items1[0]
-            val month = items1[1]
-            val year = items1[2]
-            dateOfBirth = "$year-$month-$date1"
+            if(binding.etDateOfBirth.text.toString().isNotEmpty()) {
+                val items1: List<String> = binding.etDateOfBirth.text.toString().trim().split("-")
+                val date1 = items1[0]
+                val month = items1[1]
+                val year = items1[2]
+                dateOfBirth = "$year-$month-$date1"
+            }
 
             if (firstName.isEmpty()){
                 UtilsFunctions().showToast(this@EditProfileActivity, "First name can't be empty")
@@ -222,7 +224,7 @@ class EditProfileActivity : AppCompatActivity(), AchievementsAdapter.Achievement
                 UtilsFunctions().showToast(this@EditProfileActivity, "Email address can't be empty")
             } else if (!isValidEmail(email)) {
                 UtilsFunctions().showToast(this@EditProfileActivity, "Invalid email address")
-            } else if (dateOfBirth!!.isEmpty()) {
+            } else if (dateOfBirth.isNullOrEmpty()) {
                 UtilsFunctions().showToast(this@EditProfileActivity, "Date of birth can't be empty")
             } else {
                 apiCurrentUserUpdateProfile()

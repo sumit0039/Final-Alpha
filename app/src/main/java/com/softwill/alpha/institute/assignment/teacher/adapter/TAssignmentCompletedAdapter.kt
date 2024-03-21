@@ -13,6 +13,7 @@ import com.softwill.alpha.databinding.ItemTeacherAssignmentCompletedBinding
 import com.softwill.alpha.institute.assignment.teacher.Model.TeacherCompletedAssignment
 import com.softwill.alpha.institute.assignment.teacher.activity.CheckAssignmentActivity
 import com.softwill.alpha.utils.UtilsFunctions
+import java.text.DecimalFormat
 
 
 class TAssignmentCompletedAdapter(
@@ -46,11 +47,14 @@ class TAssignmentCompletedAdapter(
                 binding.tvStartDate.text = UtilsFunctions().getDDMMMYYYY(startDate)
                 binding.tvEndDate.text = UtilsFunctions().getDDMMMYYYY(endDate)
 
+//                binding.tvTotalMarks.text = String.format("%.2f", totalMarks.toString())
 
                 binding.tvTotalMarks.text = totalMarks.toString()
-                binding.tvObtainedMarks.text = obtainMarks.toString()
+                val decimalFormat = DecimalFormat("#.##")
+                val formattedNumber =decimalFormat.format(obtainMarks)
+                binding.tvObtainedMarks.text =formattedNumber.toString()
 
-                if (status == 1 ) {
+                    if (status == 1 ) {
                     holder.binding.tvCheck.visibility = View.VISIBLE
                     holder.binding.tvObtainedMarks.visibility = View.GONE
                     holder.binding.textView33.visibility = View.GONE

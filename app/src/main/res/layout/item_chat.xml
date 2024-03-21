@@ -76,10 +76,10 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardCount"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
                 android:gravity="center"
-                app:cardBackgroundColor="@color/blue"
+                app:cardBackgroundColor="@color/green_dark"
                 app:cardCornerRadius="50dp"
                 app:cardElevation="0dp"
                 android:visibility="gone"
@@ -92,7 +92,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="2"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="10sp" />
 

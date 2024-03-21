@@ -1,8 +1,10 @@
 package com.softwill.alpha.chat
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.softwill.alpha.R
 import com.softwill.alpha.chat.adapter.RecentChatRecyclerAdapter
@@ -51,6 +54,7 @@ class ChatFragment : Fragment(), RecentChatRecyclerAdapter.CallbackInterface {
             val intent = Intent(activity, SearchUserActivity::class.java)
             startActivity(intent)
         }
+
         /*binding.ivMenu.setOnClickListener {
             val popupMenu = PopupMenu(activity, binding.ivMenu)
 
@@ -62,6 +66,7 @@ class ChatFragment : Fragment(), RecentChatRecyclerAdapter.CallbackInterface {
             }
             popupMenu.show()
         }*/
+
     }
 
     private fun setupRecyclerView(yourPreference: YourPreference) {
@@ -90,9 +95,33 @@ class ChatFragment : Fragment(), RecentChatRecyclerAdapter.CallbackInterface {
         val query = FirebaseUtil.allChatroomCollectionReference()
             .whereArrayContains("participants", yourPreference.getData(Constant.userId))
             .orderBy("timestamp", Query.Direction.DESCENDING)
-
         val options = FirestoreRecyclerOptions.Builder<ChatroomModel>()
             .setQuery(query, ChatroomModel::class.java).build()
+
+        // Get Firestore instance
+        val firestore = FirebaseFirestore.getInstance()
+
+// Execute the query
+        query.get().addOnSuccessListener { querySnapshot ->
+            // Get the count of documents in the query snapshot
+            val count = querySnapshot.size()
+            Log.d(TAG, "setupRecyclerView: $count")
+            if(count>0){
+                binding.noResultFound.visibility=View.GONE
+                binding.rvChat.visibility=View.VISIBLE
+            }else{
+                binding.noResultFound.visibility=View.VISIBLE
+                binding.rvChat.visibility=View.GONE
+            }
+            // Now 'count' contains the number of documents in the query
+            // You can use 'count' as needed here
+        }.addOnFailureListener { exception ->
+            // Handle any errors that may occur
+            Log.e(TAG, "Error getting documents: ", exception)
+        }
+
+//        Log.d(TAG, "setupRecyclerView: "+ChatroomModel().latestMessage.toString())
+//        Toast.makeText(requireContext(),ChatroomModel().latestMessage.toString()?:"0",Toast.LENGTH_LONG).show()
 
         adapter = RecentChatRecyclerAdapter(dataList,
             options,

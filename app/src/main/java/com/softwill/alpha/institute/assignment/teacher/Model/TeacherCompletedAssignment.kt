@@ -3,7 +3,7 @@ package com.softwill.alpha.institute.assignment.teacher.Model
 data class TeacherCompletedAssignment(
     val id: Int,
     val totalMarks: Int,
-    val obtainMarks: Int,
+    val obtainMarks: Double,
     val status: Int,
     val assignmentId: Int,
     val examType: Int,

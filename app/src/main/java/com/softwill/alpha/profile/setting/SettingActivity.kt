@@ -393,7 +393,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         spinnerFaculty.adapter = adapter
 
-        if(yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
+        if(yourPreference?.getData(Constant.instituteStreamClassId)!=null && yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
             etFaculty.setText(yourPreference?.getData(Constant.facultyName))
             spinnerFaculty.setSelection(mFacilitiesList.indexOf(yourPreference?.getData(Constant.facultyName)))
         }else{
@@ -429,7 +429,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mStreamsList)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         spinnerStream.adapter = adapter
-        if(yourPreference?.getData(Constant.instituteStreamId)!!.toInt()!=-1){
+        if(yourPreference?.getData(Constant.instituteStreamId)!=null && yourPreference?.getData(Constant.instituteStreamId)!!.toInt()!=-1){
 
             etStream.setText(yourPreference?.getData(Constant.streamName))
             spinnerStream.setSelection(mStreamsList.indexOf(yourPreference?.getData(Constant.instituteStreamId)))
@@ -540,7 +540,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item2, mClassList)
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
         spinnerClass.adapter = adapter
-        if(yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
+        if(yourPreference?.getData(Constant.instituteStreamClassId)!=null && yourPreference?.getData(Constant.instituteStreamClassId)!!.toInt()!=-1) {
             etClass.setText(yourPreference?.getData(Constant.className))
             spinnerClass.setSelection(mClassList.indexOf(yourPreference?.getData(Constant.className)))
         }else{

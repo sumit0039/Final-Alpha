@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.view.LayoutInflater
+import android.view.View.GONE
 import android.view.View.OnLongClickListener
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
@@ -112,6 +114,12 @@ class RecentChatRecyclerAdapter(
                 binding.tvName.text = model.receiver["name"].toString()
                 Glide.with(context).load(model.receiver["avtarUrl"].toString())
                     .placeholder(R.drawable.baseline_account_circle_24).into(binding.ivProfileImage)
+            }
+
+            if(model.isRead==false){
+              binding.cardCount.visibility= VISIBLE
+            }else{
+                binding.cardCount.visibility= GONE
             }
 
 //            binding.tvTime.text = finalDateTime
