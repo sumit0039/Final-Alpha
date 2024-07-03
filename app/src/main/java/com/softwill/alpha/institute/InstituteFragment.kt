@@ -55,16 +55,16 @@ class InstituteFragment : Fragment() {
 
         IsStudentLogin = yourPreference?.getData(Constant.IsStudentLogin).toBoolean()
 
-        /*if(yourPreference?.getData(Constant.approvedByInstite).toString().isNotEmpty() && !yourPreference?.getData(Constant.approvedByInstite).toString().contentEquals("false")) {
+        if(yourPreference?.getData(Constant.approvedByInstite).toString().isNotEmpty() && !yourPreference?.getData(Constant.approvedByInstite).toString().contentEquals("false")) {
             binding.insitituteCategory.visibility=View.VISIBLE
             binding.noInstitute.visibility=View.GONE
         }else{
             binding.insitituteCategory.visibility=View.GONE
             binding.noInstitute.visibility=View.VISIBLE
-        }*/
+        }
 
-        binding.insitituteCategory.visibility=View.VISIBLE
-        binding.noInstitute.visibility=View.GONE
+//        binding.insitituteCategory.visibility=View.VISIBLE
+//        binding.noInstitute.visibility=View.GONE
 
         onClickListener()
 

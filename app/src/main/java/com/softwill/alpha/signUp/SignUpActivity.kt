@@ -704,15 +704,14 @@ class SignUpActivity : AppCompatActivity() {
             addProperty("userName", userName)
         }
 
-        val call: Call<ResponseBody> =
-            RetrofitClient.getInstance(this@SignUpActivity).myApi.api_StudentRegister(jsonObject)
+        val call: Call<ResponseBody> = RetrofitClient.getInstance(this@SignUpActivity).myApi.api_StudentRegister(jsonObject)
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     val responseJson = response.body()?.string()
-                    val responseObject = JSONObject(responseJson)
-                    val message = responseObject.getString("message")
+                    val responseObject = responseJson?.let { JSONObject(it) }
+                    val message = responseObject?.getString("message")
 
                     if (message == "Register successfully"){
 
@@ -722,7 +721,9 @@ class SignUpActivity : AppCompatActivity() {
 
                     }
 
-                    UtilsFunctions().showToast(this@SignUpActivity, message)
+                    if (message != null) {
+                        UtilsFunctions().showToast(this@SignUpActivity, message)
+                    }
 
                 } else {
                     UtilsFunctions().handleErrorResponse(response, this@SignUpActivity);
